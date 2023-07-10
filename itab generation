@@ -1,0 +1,76 @@
+REPORT zsf_itab_aggregation.
+
+TYPES group TYPE c LENGTH 1.
+
+TYPES: BEGIN OF initial_numbers_type,
+         group  TYPE group,
+         number TYPE i,
+       END OF initial_numbers_type,
+       initial_numbers TYPE STANDARD TABLE OF initial_numbers_type WITH EMPTY KEY.
+
+
+TYPES: BEGIN OF aggregated_data_type,
+         group   TYPE group,
+         count   TYPE i,
+         sum     TYPE i,
+         min     TYPE i,
+         max     TYPE i,
+         average TYPE f,
+       END OF aggregated_data_type,
+       aggregated_data TYPE STANDARD TABLE OF aggregated_data_type WITH EMPTY KEY.
+
+DATA: initial_numbers TYPE TABLE OF initial_numbers_type,
+      aggregated_data TYPE TABLE OF aggregated_data_type,
+      a_data          TYPE TABLE OF  initial_numbers_type,
+      b_data          TYPE TABLE OF  initial_numbers_type,
+      c_data          TYPE TABLE OF  initial_numbers_type.
+
+initial_numbers = VALUE #( ( group = 'A' number = 2 )
+                           ( group = 'B' number = 1 )
+                           ( group = 'A' number = 10 )
+                           ( group = 'B' number = 3 )
+                           ( group = 'C' number = 3 )
+                           ( group = 'B' number = 5 )
+                           ( group = 'A' number = 10 )
+                           ( group = 'C' number = 12 )
+                           ( group = 'A' number = 11 ) ).
+
+DATA: count       TYPE i,
+      min_num     TYPE i,
+      max_num     TYPE i,
+      sum_num     TYPE i,
+      per_average TYPE f.
+
+
+
+START-OF-SELECTION.
+
+data ls_aggr_line type aggregated_data_type .
+  DATA(gt_init_numbers) = initial_numbers .
+  SORT gt_init_numbers BY group .
+  DELETE ADJACENT DUPLICATES FROM gt_init_numbers COMPARING group .
+
+SORT initial_numbers by group number ASCENDING .
+
+
+
+  LOOP AT gt_init_numbers INTO DATA(gs_numbers).
+
+
+
+    LOOP AT initial_numbers INTO DATA(ls_numbers) WHERE group = gs_numbers-group .
+
+ls_aggr_line-count = ls_aggr_line-count + 1 .
+      ls_aggr_line-sum  = ls_aggr_line-sum + ls_numbers-number.
+      IF ls_aggr_line-count = 1 .
+           ls_aggr_line-min = ls_numbers-number.
+      ENDIF.
+    ENDLOOP.
+    ls_aggr_line-max = ls_numbers-number.
+      ls_aggr_line-average = ls_aggr_line-sum / ls_aggr_line-count.
+ls_aggr_line-group = gs_numbers-group.
+*  fill a field
+  APPEND ls_aggr_line  TO aggregated_data.
+clear ls_aggr_line .
+
+  ENDLOOP.
