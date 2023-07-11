@@ -11,3 +11,5 @@ ENDLOOP.
 IF line_exists( gt_nums[ col1 = 4 ] ).
 BREAK-POINT.
 ENDIF.
+
+serdar üstadimin tipleri.
