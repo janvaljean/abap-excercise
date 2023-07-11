@@ -1,0 +1,13 @@
+DATA(gt_nums) = VALUE nums( ( col1 = 1 col2 = 2 col3 = 3 )
+                            ( col1 = 4 col2 = 5 col3 = 6 )
+                            ( col1 = 7 col2 = 8 col3 = 9 ) ).
+
+
+
+
+LOOP AT gt_nums into data(wa2) where col2 = 2 .
+wa2-col3 = 10.
+ENDLOOP.
+IF line_exists( gt_nums[ col1 = 4 ] ).
+BREAK-POINT.
+ENDIF.
