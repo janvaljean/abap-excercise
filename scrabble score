@@ -1,0 +1,73 @@
+REPORT zsf_scrabble_score.
+
+TYPES: BEGIN OF scrabble_type,
+         letter TYPE c,
+         value  TYPE int2,
+       END OF scrabble_type.
+
+TYPES: scrabble TYPE STANDARD TABLE OF scrabble_type WITH EMPTY KEY.
+
+DATA(scrabble) = VALUE scrabble( ( letter = 'A' value = 1 )
+( letter = 'E' value = 1 )
+( letter = 'I' value = 1 )
+( letter = 'O' value = 1 )
+( letter = 'U' value = 1 )
+( letter = 'L' value = 1 )
+( letter = 'N' value = 1 )
+( letter = 'R' value = 1 )
+( letter = 'S' value = 1 )
+( letter = 'T' value = 1 )
+( letter = 'D' value = 2 )
+( letter = 'G' value = 2 )
+( letter = 'B' value = 3 )
+( letter = 'C' value = 3 )
+( letter = 'M' value = 3 )
+( letter = 'P' value = 3 )
+( letter = 'F' value = 4 )
+( letter = 'H' value = 4 )
+( letter = 'V' value = 4 )
+( letter = 'W' value = 4 )
+( letter = 'Y' value = 4 )
+( letter = 'K' value = 5 )
+( letter = 'J' value = 8 )
+( letter = 'X' value = 8 )
+( letter = 'Q' value = 10 )
+( letter = 'Z' value = 10 )
+
+ ).
+
+
+
+PARAMETERS: smth TYPE string.
+
+DATA:
+  index  TYPE i,
+  length TYPE i,
+  char   TYPE c,
+  num    TYPE i,
+  sum    TYPE i.
+
+length = strlen( smth ).
+
+
+
+WHILE index < length.
+  char = smth+index(1).
+  TRANSLATE char TO UPPER CASE.
+  TRY .
+      READ TABLE scrabble WITH KEY letter = char INTO DATA(wa).
+      sum = sum + wa-value.
+*      LOOP AT scrabble INTO DATA(ls_scrabble).
+*        IF ls_scrabble-letter = char.
+*          sum = sum + ls_scrabble-value.
+*
+*        ENDIF.
+*
+*      ENDLOOP.
+
+    CATCH cx_sy_conversion_no_number.
+
+
+  ENDTRY.
+  ADD 1 TO index.
+ENDWHILE.
