@@ -1,0 +1,312 @@
+REPORT zsf_itab_nesting.
+
+TYPES: BEGIN OF artists_type,
+         artist_id   TYPE string,
+         artist_name TYPE string,
+       END OF artists_type.
+TYPES artists TYPE STANDARD TABLE OF artists_type WITH KEY artist_id.
+TYPES: BEGIN OF albums_type,
+         artist_id  TYPE string,
+         album_id   TYPE string,
+         album_name TYPE string,
+       END OF albums_type.
+TYPES albums TYPE STANDARD TABLE OF albums_type WITH KEY artist_id album_id.
+
+TYPES: BEGIN OF songs_type,
+         artist_id TYPE string,
+         album_id  TYPE string,
+         song_id   TYPE string,
+         song_name TYPE string,
+       END OF songs_type.
+TYPES songs TYPE STANDARD TABLE OF songs_type WITH KEY artist_id album_id song_id.
+
+
+
+TYPES: BEGIN OF song_nested_type,
+         song_id   TYPE string,
+         song_name TYPE string,
+       END OF song_nested_type.
+
+
+TYPES: BEGIN OF album_song_nested_type,
+         album_id   TYPE string,
+         album_name TYPE string,
+         songs      TYPE STANDARD TABLE OF song_nested_type WITH KEY song_id,
+       END OF album_song_nested_type.
+
+
+
+TYPES: BEGIN OF artist_album_nested_type,
+         artist_id   TYPE string,
+         artist_name TYPE string,
+         albums      TYPE STANDARD TABLE OF album_song_nested_type WITH KEY album_id,
+       END OF artist_album_nested_type.
+TYPES nested_data TYPE STANDARD TABLE OF artist_album_nested_type WITH KEY artist_id.
+
+
+DATA(artists) = VALUE artists( ( artist_id = 1 artist_name = 'Godsmack' )
+                               ( artist_id = 2 artist_name = 'Shinedown' ) ).
+
+DATA(albums) = VALUE albums( ( artist_id = 1 album_id = 1 album_name = 'Faceless' )
+                             ( artist_id = 1 album_id = 2 album_name = 'When Lengends Rise' )
+                             ( artist_id = 2 album_id = 1 album_name = 'The Sound of Madness' )
+                             ( artist_id = 2 album_id = 2 album_name = 'Planet Zero' ) ).
+
+DATA(songs) = VALUE songs(   ( artist_id = 1 album_id = 1 song_id = 1 song_name = 'Straight Out Of Line' )
+                             ( artist_id = 1 album_id = 1 song_id = 2 song_name = 'Changes' )
+                             ( artist_id = 1 album_id = 2 song_id = 1 song_name = 'Bullet Proof' )
+                             ( artist_id = 1 album_id = 2 song_id = 2 song_name = 'Under Your Scars' )
+                             ( artist_id = 2 album_id = 1 song_id = 1 song_name = 'Second Chance' )
+                             ( artist_id = 2 album_id = 1 song_id = 2 song_name = 'Breaking Inside' )
+                             ( artist_id = 2 album_id = 2 song_id = 1 song_name = 'Dysfunctional You' )
+                             ( artist_id = 2 album_id = 2 song_id = 2 song_name = 'Daylight' ) ).
+
+########################################################################solution###############################################################
+
+nested_data = VALUE #( FOR lines IN artists  (
+      artist_id = lines-artist_id
+      artist_name = lines-artist_name
+      albums = VALUE #( FOR albumlines IN  albums WHERE ( artist_id = lines-artist_id ) (
+         album_id = albumlines-album_id
+         album_name = albumlines-album_name
+         songs =  VALUE #(  FOR songlines IN  songs  WHERE ( album_id = albumlines-album_id AND artist_id = albumlines-artist_id ) (
+             song_id = songlines-song_id
+             song_name = songlines-song_name
+    ) )
+      ) )
+      ) ).
+
+##################demo################################
+*TYPES: BEGIN OF ty_songs,
+*         song_name TYPE string,
+*       END OF ty_songs.
+*
+*TYPES: BEGIN OF ty_albums,
+*         album_name TYPE string,
+*         songs      TYPE STANDARD TABLE OF ty_songs WITH DEFAULT KEY,
+*       END OF ty_albums.
+*
+*DATA: lt_albums TYPE TABLE OF ty_albums,
+*      ls_album  TYPE ty_albums,
+*      lt_songs  TYPE STANDARD TABLE OF ty_songs WITH DEFAULT KEY,
+*      ls_song   TYPE ty_songs.
+*
+*CLEAR: lt_albums, ls_album, lt_songs, ls_song.
+*
+*ls_song-song_name = 'Song 1'.
+*APPEND ls_song TO lt_songs.
+*
+*ls_song-song_name = 'Song 2'.
+*APPEND ls_song TO lt_songs.
+*
+*ls_album-album_name = 'Album 1'.
+*ls_album-songs = lt_songs.
+*APPEND ls_album TO lt_albums.
+*
+*CLEAR: lt_songs.
+*
+*ls_song-song_name = 'Song 3'.
+*APPEND ls_song TO lt_songs.
+*
+*ls_album-album_name = 'Album 2'.
+*ls_album-songs = lt_songs.
+*APPEND ls_album TO lt_albums.
+############################other solutions #################################################
+ DATA  ls_album_nested type album_song_nested_type.
+    DATA  ls_nested_data  TYPE LINE OF nested_data.
+    
+    LOOP AT artists INTO DATA(ls_artist).
+      ls_nested_data-artist_id    = ls_artist-artist_id.
+      ls_nested_data-artist_name  = ls_artist-artist_name.
+      ls_nested_data-albums       = VALUE #( FOR ls_album IN albums WHERE  ( artist_id = ls_artist-artist_id )
+                                      (
+                                        album_id    = ls_album-album_id
+                                        album_name  = ls_album-album_name
+                                        songs       = VALUE #( FOR ls_song IN songs WHERE ( artist_id = ls_artist-artist_id AND
+                                                                                            album_id = ls_album-album_id )
+                                                      (
+                                                        song_id   = ls_song-song_id
+                                                        song_name = ls_song-song_name
+                                                      )
+                                      ) ) ).
+      APPEND ls_nested_data TO nested_data.  
+    ENDLOOP.
+    #########################################################################################
+
+ DATA:
+      lv_artist_id       TYPE string,
+      lv_artist_name     TYPE string.
+    FIELD-SYMBOLS:
+      <wa_nested_artist> TYPE artist_album_nested_type,
+      <wa_nested_album>  TYPE album_song_nested_type,
+      <wa_nested_song>   TYPE song_nested_type.
+    " Sort tables in top-level key order
+    SORT artists STABLE BY
+      artist_id ASCENDING AS TEXT.
+    SORT albums STABLE BY
+      artist_id ASCENDING AS TEXT
+      album_id ASCENDING AS TEXT.
+    SORT songs STABLE BY
+      artist_id ASCENDING AS TEXT
+      album_id ASCENDING AS TEXT
+      song_id ASCENDING AS TEXT.
+    " Commence artist-album-song processing
+    LOOP AT artists
+      ASSIGNING FIELD-SYMBOL(<wa_artist>).
+      lv_artist_id = <wa_artist>-artist_id.
+      lv_artist_name = <wa_artist>-artist_name.
+      " Write level 1: artist
+      APPEND INITIAL LINE
+        TO nested_data
+        ASSIGNING <wa_nested_artist>.
+      <wa_nested_artist>-artist_id = lv_artist_id.
+      <wa_nested_artist>-artist_name = lv_artist_name.
+      " Find albums
+      READ TABLE albums
+        WITH TABLE KEY artist_id = lv_artist_id
+        BINARY SEARCH
+        TRANSPORTING NO FIELDS.
+      LOOP AT albums
+        FROM sy-tabix
+        ASSIGNING FIELD-SYMBOL(<wa_album>).
+        IF <wa_album>-artist_id <> lv_artist_id.
+          EXIT.
+        ENDIF.
+        " Write level 2: album
+        APPEND INITIAL LINE
+          TO <wa_nested_artist>-albums
+          ASSIGNING <wa_nested_album>.
+        <wa_nested_album>-album_id = <wa_album>-album_id.
+        <wa_nested_album>-album_name = <wa_album>-album_name.
+        " Find songs
+        READ TABLE songs
+          WITH TABLE KEY artist_id = lv_artist_id
+                         album_id = <wa_album>-album_id
+          BINARY SEARCH
+          TRANSPORTING NO FIELDS.
+        LOOP AT songs
+          FROM sy-tabix
+          ASSIGNING FIELD-SYMBOL(<wa_song>).
+          IF <wa_song>-artist_id <> lv_artist_id OR
+             <wa_song>-album_id <> <wa_album>-album_id.
+            EXIT.
+          ENDIF.
+          " Write level 3: song
+          APPEND INITIAL LINE
+            TO <wa_nested_album>-songs
+            ASSIGNING <wa_nested_song>.
+          <wa_nested_song>-song_id = <wa_song>-song_id.
+          <wa_nested_song>-song_name = <wa_song>-song_name.
+        ENDLOOP.
+      ENDLOOP.
+    ENDLOOP.
+################################################################################################
+  TYPES: BEGIN OF ty_album_key,
+             artist_id TYPE string,
+             album_id  TYPE string,
+           END OF ty_album_key.
+    DATA: album_key      TYPE ty_album_key,
+          song_album_key TYPE ty_album_key.
+    DATA: l_albums_tabix TYPE sy-tabix,
+          l_songs_tabix  TYPE sy-tabix.
+    SORT: artists by artist_id,
+          albums  by artist_id album_id,
+          songs   by artist_id album_id song_id.
+    l_albums_tabix = 1.
+    l_songs_tabix  = 1.
+    LOOP AT artists ASSIGNING FIELD-SYMBOL(<artist>).
+      APPEND INITIAL LINE TO nested_data ASSIGNING FIELD-SYMBOL(<nested>).
+      <nested>-artist_id   = <artist>-artist_id.
+      <nested>-artist_name = <artist>-artist_name.
+      LOOP AT albums ASSIGNING FIELD-SYMBOL(<album>) FROM l_albums_tabix.
+        IF <album>-artist_id > <artist>-artist_id.
+          l_albums_tabix = sy-tabix.
+          EXIT.
+        ELSEIF <album>-artist_id = <artist>-artist_id.
+          APPEND INITIAL LINE TO <nested>-albums ASSIGNING FIELD-SYMBOL(<artist_album>).
+          <artist_album>-album_id   = <album>-album_id.
+          <artist_album>-album_name = <album>-album_name.
+          album_key-artist_id = <album>-artist_id.
+          album_key-album_id  = <album>-album_id.
+          LOOP AT songs ASSIGNING FIELD-SYMBOL(<song>) FROM l_songs_tabix.
+            song_album_key-artist_id = <song>-artist_id.
+            song_album_key-album_id  = <song>-album_id.
+            IF song_album_key > album_key.
+              l_songs_tabix = sy-tabix.
+              EXIT.
+            ELSEIF song_album_key = album_key.
+              APPEND INITIAL LINE TO <artist_album>-songs ASSIGNING FIELD-SYMBOL(<artist_album_song>).
+              <artist_album_song>-song_id   = <song>-song_id.
+              <artist_album_song>-song_name = <song>-song_name.
+            ENDIF.
+    
+          ENDLOOP.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+
+###############################################################################################################
+DATA ls_nested_data  TYPE artist_album_nested_type.
+    DATA ls_albums_nes   TYPE album_song_nested_type.
+    DATA ls_songs_nes    TYPE song_nested_type.
+    DATA ls_artists TYPE artists_type.
+    DATA ls_albums TYPE albums_type.
+    DATA ls_songs TYPE songs_type.
+    CLEAR ls_albums_nes.
+    CLEAR ls_nested_data.
+    LOOP  AT songs INTO ls_songs.
+      IF ls_albums_nes-album_id <> ls_songs-album_id.
+        IF ls_albums_nes-songs IS NOT INITIAL.
+          APPEND ls_albums_nes TO ls_nested_data-albums.
+          CLEAR ls_albums_nes.
+        ENDIF.
+        READ TABLE albums INTO ls_albums WITH KEY artist_id = ls_songs-artist_id  album_id = ls_songs-album_id.
+        IF sy-subrc = 0.
+          ls_albums_nes-album_id = ls_albums-album_id.
+          ls_albums_nes-album_name = ls_albums-album_name.
+        ENDIF.
+      ENDIF.
+      IF  ls_nested_data-artist_id <> ls_songs-artist_id.
+        IF ls_nested_data-albums IS NOT INITIAL.
+          APPEND ls_nested_data TO nested_data.
+          CLEAR ls_nested_data.
+        ENDIF.
+        READ TABLE artists INTO ls_artists WITH KEY artist_id = ls_songs-artist_id.
+        IF sy-subrc = 0.
+          ls_nested_data-artist_id = ls_artists-artist_id.
+          ls_nested_data-artist_name = ls_artists-artist_name.
+        ENDIF.
+      ENDIF.
+      ls_songs_nes-song_id = ls_songs-song_id.
+      ls_songs_nes-song_name = ls_songs-song_name.
+      APPEND ls_songs_nes TO ls_albums_nes-songs.
+      CLEAR ls_songs_nes.
+    ENDLOOP.
+    IF ls_albums_nes IS NOT INITIAL.
+      APPEND ls_albums_nes TO ls_nested_data-albums.
+      APPEND ls_nested_data TO nested_data.
+    ENDIF.
+    IF songs IS INITIAL.
+      LOOP AT albums INTO ls_albums.
+        ls_albums_nes-album_id = ls_albums-album_id.
+        ls_albums_nes-album_name = ls_albums-album_name.
+        IF  ls_nested_data-artist_id <> ls_albums-artist_id.
+          IF ls_nested_data-albums IS NOT INITIAL.
+            APPEND ls_nested_data TO nested_data.
+            CLEAR ls_albums_nes.
+          ENDIF.
+          READ TABLE artists INTO ls_artists WITH KEY artist_id = ls_albums-artist_id.
+          IF sy-subrc = 0.
+            ls_nested_data-artist_id = ls_artists-artist_id.
+            ls_nested_data-artist_name = ls_artists-artist_name.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+    IF albums IS INITIAL.
+      LOOP AT artists INTO ls_artists.
+        ls_nested_data-artist_id = ls_artists-artist_id.
+        ls_nested_data-artist_name = ls_artists-artist_name.
+        APPEND ls_nested_data TO nested_data.
+      ENDLOOP.
+    ENDIF.
