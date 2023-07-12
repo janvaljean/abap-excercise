@@ -1,0 +1,44 @@
+SORT artists BY artist_id.
+SORT albums  BY artist_id album_id.
+SORT songs   BY artist_id album_id song_id.
+
+CLEAR: nested_data, gv_begin, gv_end.
+
+GET TIME STAMP FIELD gv_begin.
+
+LOOP AT artists INTO DATA(artist).
+  ls_nested_data-artist_id = artist-artist_id.
+  ls_nested_data-artist_name = artist-artist_name.
+
+  READ TABLE albums WITH KEY artist_id = artist-artist_id TRANSPORTING NO FIELDS BINARY SEARCH.
+
+  LOOP AT albums INTO DATA(album) FROM sy-tabix.
+*  LOOP AT albums INTO DATA(album) WHERE artist_id = artist-artist_id.
+    IF album-artist_id <> artist-artist_id.
+      EXIT.
+    ENDIF.
+
+    ls_album_song-album_id   = album-album_id.
+    ls_album_song-album_name = album-album_name.
+
+    READ TABLE songs WITH KEY artist_id = artist-artist_id album_id = album-album_id TRANSPORTING NO FIELDS BINARY SEARCH.
+
+    LOOP AT songs INTO DATA(song) FROM sy-tabix.
+*    LOOP AT songs INTO DATA(song) WHERE artist_id = artist-artist_id AND album_id = album-album_id.
+      IF song-artist_id <> artist-artist_id OR song-album_id <> album-album_id.
+        EXIT.
+      ENDIF.
+
+      ls_song-song_id   = song-song_id.
+      ls_song-song_name = song-song_name.
+      APPEND ls_song TO ls_album_song-songs.
+      CLEAR  ls_song.
+    ENDLOOP.
+
+    APPEND ls_album_song TO ls_nested_data-albums.
+    CLEAR  ls_album_song.
+  ENDLOOP.
+
+  APPEND ls_nested_data TO nested_data.
+  CLEAR  ls_nested_data.
+ENDLOOP.
