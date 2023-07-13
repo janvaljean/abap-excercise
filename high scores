@@ -19,3 +19,40 @@ METHOD latest.
       ENDIF.
       APPEND <score> TO result.
     ENDLOOP.
+###############################################
+  METHOD personalbest.
+    sort scores_list descending.
+    result = scores_list[ 1 ].
+  ENDMETHOD.
+
+#################################
+
+METHOD personaltopthree.
+    DATA : iterations type i.
+    sort scores_list descending.
+    iterations = lines( scores_list ).
+    
+    DO COND i( WHEN iterations < 3 THEN iterations else 3 ) times.
+      APPEND scores_list[ sy-index ] TO result.
+    ENDDO.
+  ENDMETHOD.
+##############################################
+ DATA(lv_length) = lines( sorted_list ).
+    IF lv_length > 3.
+      lv_length = 3.
+    ENDIF.
+    
+    DO lv_length TIMES.
+      APPEND sorted_list[ sy-index ] TO result.
+    ENDDO.
+###############################################
+  METHOD personaltopthree.
+    data(lt_scores_list_sort) = me->scores_list.
+    sort lt_scores_list_sort descending.
+    do 3 times.
+      read table lt_scores_list_sort into data(lv_scores) index sy-index.
+      check sy-subrc is initial.
+      append lv_scores to result.
+    enddo. 
+  ENDMETHOD.
+####################
