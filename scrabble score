@@ -38,36 +38,113 @@ DATA(scrabble) = VALUE scrabble( ( letter = 'A' value = 1 )
 
 
 
-PARAMETERS: smth TYPE string.
+PARAMETERS: word TYPE string.
 
 DATA:
   index  TYPE i,
   length TYPE i,
   char   TYPE c,
-  num    TYPE i,
   sum    TYPE i.
 
-length = strlen( smth ).
-
-
+length = strlen( word ).
 
 WHILE index < length.
-  char = smth+index(1).
+  char = word+index(1).
   TRANSLATE char TO UPPER CASE.
-  TRY .
-      READ TABLE scrabble WITH KEY letter = char INTO DATA(wa).
-      sum = sum + wa-value.
-*      LOOP AT scrabble INTO DATA(ls_scrabble).
-*        IF ls_scrabble-letter = char.
-*          sum = sum + ls_scrabble-value.
-*
-*        ENDIF.
-*
-*      ENDLOOP.
-
-    CATCH cx_sy_conversion_no_number.
-
-
+READ TABLE scrabble WITH KEY letter = char INTO DATA(wa).
+sum = sum + wa-value.
   ENDTRY.
   ADD 1 TO index.
 ENDWHILE.
+####################################################
+andere Sichtweisen/other perspectives
+###############################################
+
+  result =
+  REDUCE string( INIT s = 0
+                 FOR  i = 0 WHILE i < strlen( input ) 
+                 NEXT s += COND i( LET current_val = to_upper( input+i(1) ) IN
+                 WHEN contains( val = 'AEIOULNRST' sub = current_val ) THEN 1
+                 WHEN contains( val = 'DG' sub = current_val ) THEN 2
+                 WHEN contains( val = 'BCMP' sub = current_val ) THEN 3
+                 WHEN contains( val = 'FHVWY' sub = current_val ) THEN 4
+                 WHEN contains( val = 'K' sub = current_val ) THEN 5
+                 WHEN contains( val = 'JX' sub = current_val ) THEN 8
+                 WHEN contains( val = 'QZ' sub = current_val ) THEN 10 
+                 ELSE 0
+                 ) ).
+
+#############################################################
+CHECK input IS NOT INITIAL.
+    result = count( val = input case = abap_false regex = `[AEIOULNRST]` )
+             + 2 * count( val = input case = abap_false regex = `[DG]` )
+             + 3 * count( val = input case = abap_false regex = `[BCMP]` )
+             + 4 * count( val = input case = abap_false regex = `[FHVWY]` )
+             + 5 * count( val = input case = abap_false regex = `[K]` )
+             + 8 * count( val = input case = abap_false regex = `[JX]` )
+             + 10 * count( val = input case = abap_false regex = `[QZ]` ).
+##########################################################################
+
+ data(lv_total) = 0.
+    DO strlen( input ) TIMES.
+      data(lv_cur_char) = to_upper( substring( val = input off = sy-index - 1 len = 1 ) ).
+      data(lv_value) = COND #(
+        WHEN lv_cur_char CA 'AEIOULNRST' THEN 1
+        WHEN lv_cur_char CA 'DG' THEN 2
+        WHEN lv_cur_char CA 'BCMP' THEN 3
+        WHEN lv_cur_char CA 'FHVWY' THEN 4
+        WHEN lv_cur_char CA 'K' THEN 5
+        WHEN lv_cur_char CA 'JX' THEN 8
+        WHEN lv_cur_char CA 'QZ' THEN 10
+        ELSE 0
+      ).
+    lv_total = lv_total + lv_value.
+  enddo.
+  result = lv_total.
+
+#####################################################################################
+
+
+    CHECK input IS NOT INITIAL.
+    input_upper = input.
+      translate input_upper to upper case.
+             result = count( val = input_upper regex = '[AEIOULNRST]' )
+            + 2  *   count( val = input_upper regex = '[DG]')
+            + 3  *   count( val = input_upper regex = '[BCMP]')
+            + 4  *   count( val = input_upper regex = '[FHVWY]')
+            + 5  *   count( val = input_upper regex = '[K]')
+            + 8  *   count( val = input_upper regex = '[JX]')
+            + 10 *   count( val = input_upper regex = '[QZ]') .
+  ENDMETHOD.
+####################################################################################################
+    data(lv_str) = strlen( input ).
+    if lv_str = 0.
+       return.
+    endif.
+    translate input to upper case.
+    do lv_str times.
+      data(lv_indx) = sy-index - 1.
+      data(Lv_char) = input+lv_indx(1).
+    if Lv_char ca 'AEIOULNRST'.
+      add 1 to result.
+    endif.
+    if Lv_char ca 'BCMP'.
+      add 3 to result.
+    endif.
+    if Lv_char ca 'DG'.
+      add 2 to result.
+    endif.
+    if Lv_char ca 'FHVWY'.
+      add 4 to result.
+    endif.
+    if Lv_char = 'K'.
+      add 5 to result.
+    endif.
+    if Lv_char ca 'JX'.
+      add 8 to result.
+    endif.
+    if Lv_char ca 'QZ'.
+      add 10 to result.
+    endif.
+    enddo.
+ENDMETHOD.
