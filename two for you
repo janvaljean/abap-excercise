@@ -1,0 +1,41 @@
+REPORT zsf_two_fer.
+
+
+PARAMETERS input TYPE string.
+
+DATA result TYPE string.
+DATA(length) = strlen( input ).
+      
+
+
+
+IF length = 0.
+  result = 'One for you, one for me.'.
+ELSE.
+  result = 'One for' && ` ` && input &&  ', one for me.' .
+
+ENDIF.
+
+
+WRITE result.
+####################################
+  METHOD two_fer.
+     result = |One for { cond string( when input = '' then 'you' else input) }, one for me.|.
+  ENDMETHOD.
+#########  #########################
+   METHOD two_fer.
+    if input = ''.
+      data(name) = `you`.
+    else.
+      name = input.
+    endif.
+    result = |One for { name }, one for me.|.
+  ENDMETHOD.
+ ####################################### 
+  METHOD two_fer.
+    DATA(name) = input.
+    IF name IS INITIAL.
+      name = 'you'.
+    ENDIF.
+    result = |One for { name }, one for me.|.
+  ENDMETHOD.
