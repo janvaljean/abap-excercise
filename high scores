@@ -1,0 +1,21 @@
+METHOD latest.
+     lt_scores = me->scores_list.
+    result = scores_list[ lines( scores_list ) ].
+  ENDMETHOD.
+
+  METHOD personalbest.
+ LOOP AT scores_list ASSIGNING FIELD-SYMBOL(<score>).
+      IF <score> > result.
+        result = <score>.
+      ENDIF.
+  ENDMETHOD.
+
+  METHOD personaltopthree.
+     DATA(scores) = scores_list.
+    SORT scores BY table_line DESCENDING.
+    LOOP AT scores ASSIGNING FIELD-SYMBOL(<score>).
+      IF sy-tabix > 3.
+        EXIT.
+      ENDIF.
+      APPEND <score> TO result.
+    ENDLOOP.
