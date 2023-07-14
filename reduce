@@ -1,0 +1,32 @@
+ATA(sum) = 0.
+
+WHILE n - 1 >= 0.
+  result =  2 ** ( n - 1 ).
+  sum = sum + result.
+  n = n - 1.
+  CLEAR result.
+ENDWHILE.
+
+#######################
+result = reduce #( init x = 0 for i = 1 until i > 64 next x += me->square( i ) ).
+#######################
+  METHOD square.
+    if input between 1 and 64.
+      result = 2 ** ( input - 1 ).
+    else.
+      raise exception type cx_parameter_invalid.
+    endif.
+  ENDMETHOD.
+
+################################
+  " add solution here
+    DATA(lv_square_unit) = 1.
+    DO 64 TIMES.
+      result = result + me->square( lv_square_unit ).
+      lv_square_unit = lv_square_unit + 1.
+    ENDDO.
+##################################
+do 64 times.
+      result = result + square( sy-index ).
+    enddo.
+############################
