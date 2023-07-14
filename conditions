@@ -1,0 +1,65 @@
+METHOD resistor_color.
+    value = SWITCH #( color_code
+      when 'black'  THEN 0
+      when 'brown'  THEN 1
+      when 'red'    THEN 2
+      when 'orange' THEN 3
+      when 'yellow' THEN 4
+      when 'green'  THEN 5
+      when 'blue'   THEN 6
+      when 'violet' THEN 7
+      when 'grey'   THEN 8
+      when 'white'  THEN 9
+    ).
+  ENDMETHOD.
+
+  ##########################
+   METHOD resistor_color.
+color_code = to_upper( val = color_code ).
+case color_code.
+WHEN 'BLACK' .
+value = 0.
+WHEN 'BROWN' .
+value = 1.
+WHEN 'BED'. 
+value = 2.
+WHEN 'ORANGE'. 
+value = 3.
+WHEN 'YELLOW'. 
+value = 4.
+WHEN 'GREEN'. 
+value = 5.
+WHEN 'BLUE' .
+value = 6.
+WHEN 'VIOLET' .
+value = 7.
+WHEN 'GREY'. 
+value = 8.
+WHEN 'WHITE'. 
+value = 9.
+endcase.
+  ENDMETHOD.
+###################################
+    METHOD resistor_color.
+  TYPES: BEGIN OF resist_color_val,
+          color type string,
+          value type i,
+         END OF resist_color_val.
+  DATA: lt_color_vals TYPE TABLE OF resist_color_val.
+  lt_color_vals = VALUE #(
+( color = 'BLACK' value = 0 )
+( color = 'BROWN' value = 1 )
+( color = 'RED' value = 2 )
+( color = 'ORANGE' value = 3 )
+( color = 'YELLOW' value = 4 )
+( color = 'GREEN' value = 5 )
+( color = 'BLUE' value = 6 )
+( color = 'VIOLET' value = 7 )
+( color = 'GREY' value = 8 )
+( color = 'WHITE' value = 9 )
+).
+data(color_up) = to_upper( color_code ).
+value = lt_color_vals[ color = color_up ]-value.
+  ENDMETHOD.
+
+  ##############################################################
