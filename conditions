@@ -63,3 +63,35 @@ value = lt_color_vals[ color = color_up ]-value.
   ENDMETHOD.
 
   ##############################################################
+IF year MOD 400 EQ 0.
+  WRITE 'leap400'.
+
+ELSEIF  year MOD 100 <> 0 AND year MOD 4 = 0 .
+  WRITE 'leap4'.
+
+ELSE.
+  WRITE 'not leap'.
+ENDIF.
+
+
+METHOD leap.
+    result = xsdbool( ( year MOD 4 = 0 AND year MOD 100 <> 0 ) OR ( year MOD 400 = 0 ) ).
+  ENDMETHOD.
+  
+    METHOD leap.
+  result = cond abap_bool( 
+when ( year mod 400 = 0 ) then abap_true 
+when ( year mod 100 = 0 ) then abap_false 
+when ( year mod 4 = 0 ) then abap_true 
+).
+* add solution here
+  ENDMETHOD.
+ 
+ 
+   METHOD leap.
+* add solution here
+  IF ( year MOD 4   EQ 0 ) AND ( ( year MOD 100 NE 0 ) OR ( year MOD 400 EQ 0 ) ) .
+      result = abap_true.
+  ENDIF.
+
+###########################################################################
