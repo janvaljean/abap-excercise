@@ -1,1 +1,93 @@
-kindergarten
+EPORT zsf_kindergarten.
+
+*DATA(diagram) =  'VRCGVVRVCGGCCGVRGCVCGCGV\nVRCCCGCRRGVCGCRVVCVGCGCV'.
+DATA(diagram) =  'VR\nVR'.
+
+TYPES: BEGIN OF plants_type,
+         name TYPE string,
+
+       END OF plants_type.
+
+TYPES: plants TYPE STANDARD TABLE OF plants_type WITH EMPTY KEY.
+*DATA lv_string type string.
+*lv_string = 'asd'.
+
+*index
+*first alice
+*DATA(var) = diagram+index(2).
+*DATA(var2) = diagram+position(2).
+
+*second bob
+*index1 = index + 2.
+*position = position + 2.
+*DATA(var) = diagram+index(2).
+*DATA(var2) = diagram+position(2).
+
+DATA(students) = VALUE string_table( ( |Alice| )
+( |Bob| )
+( |Charlie| )
+( |David| )
+( |Eve| )
+( |Fred| )
+( |Ginny| )
+( |Harriet| )
+( |Ileana| )
+( |Joseph| )
+( |Kincaid| )
+( |Larry| )
+
+).
+SORT students.
+READ TABLE students WITH KEY table_line = 'Alice' TRANSPORTING NO FIELDS BINARY SEARCH.
+IF sy-subrc = 0.
+  DATA(index) = sy-tabix.
+
+ENDIF.
+*LOOP AT students INTO DATA(wa).
+* if wa = 'Bob'.
+*   DATA(index) = sy-tabix.
+*   endif.
+*
+*ENDLOOP.
+
+IF diagram CS '\n'.
+  "here, SY-FDPOS contains the position of the letter
+  DATA(position) = sy-fdpos + 2 + index.
+ENDIF.
+
+index = 2 * ( index - 1 ).
+
+DATA(var) = diagram+index(2).
+DATA(var2) = diagram+position(2).
+DATA results  TYPE string_table.
+
+*CONCATENATE.
+
+DATA(plants) = VALUE plants( ( name = 'clover' )
+( name = 'grass' )
+( name = 'radishes' )
+( name = 'violets' ) ).
+
+*data(results) = VALUE string_table( ( ) )
+DATA(word) = |{ var }| & |{ var2 }|.
+
+DATA:
+  index1 TYPE i,
+  length TYPE i,
+  char   TYPE c.
+
+length = strlen( word ).
+
+WHILE index1 < length.
+  char = word+index1(1).
+  TRANSLATE char TO LOWER CASE.
+  LOOP AT plants INTO DATA(ls).
+
+    IF ls-name+0(1) EQ char.
+      APPEND ls-name TO results.
+    ENDIF.
+
+  ENDLOOP.
+
+  ADD 1 TO index1.
+ENDWHILE.
