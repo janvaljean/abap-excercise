@@ -91,3 +91,98 @@ WHILE index1 < length.
 
   ADD 1 TO index1.
 ENDWHILE.
+###################################################################
+
+ METHOD plants.
+    DATA(abcd) = `ABCDEFGHIJKLMNOPQRSTUVWXYZ`.
+    DATA row_one TYPE c LENGTH 100.
+    DATA row_two TYPE c LENGTH 100.
+    SPLIT diagram AT `\n` INTO row_one row_two.
+    FIND student(1) IN abcd MATCH OFFSET DATA(student_id).
+    DATA(offset) = student_id * 2.
+    APPEND get_plant( row_one+offset(1) ) TO results.
+    ADD 1 TO offset.
+    APPEND get_plant( row_one+offset(1) ) TO results.
+    SUBTRACT 1 FROM offset.
+    APPEND get_plant( row_two+offset(1) ) TO results.
+    ADD 1 TO offset.
+    APPEND get_plant( row_two+offset(1) ) TO results.
+  ENDMETHOD.
+  METHOD get_plant.
+    plant = SWITCH #( id 
+      WHEN 'G' THEN 'grass' 
+      WHEN 'V' THEN 'violets' 
+      WHEN 'C' THEN 'clover' 
+      WHEN 'R' THEN 'radishes' ).
+  ENDMETHOD.
+#######################################################################
+REPORT zsf_kindergarten.
+
+*DATA(diagram) =  'VRCGVVRVCGGCCGVRGCVCGCGV\nVRCCCGCRRGVCGCRVVCVGCGCV'.
+DATA(diagram) =  'VR\nVR'.
+
+TYPES: BEGIN OF plants_type,
+         name TYPE string,
+
+       END OF plants_type.
+
+TYPES: plants TYPE STANDARD TABLE OF plants_type WITH EMPTY KEY.
+DATA(plants) = VALUE plants( ( name = 'clover' )
+( name = 'grass' )
+( name = 'radishes' )
+( name = 'violets' ) ).
+
+DATA(students) = VALUE string_table( ( |Alice| )
+( |Bob| )
+( |Charlie| )
+( |David| )
+( |Eve| )
+( |Fred| )
+( |Ginny| )
+( |Harriet| )
+( |Ileana| )
+( |Joseph| )
+( |Kincaid| )
+( |Larry| )
+
+).
+SORT students.
+READ TABLE students WITH KEY table_line = 'Alice' TRANSPORTING NO FIELDS BINARY SEARCH.
+
+*find index
+IF sy-subrc = 0.
+  DATA(index) = sy-tabix.
+ENDIF.
+index = 2 * ( index - 1 ).
+IF diagram CS '\n'.
+  DATA(position) = sy-fdpos + 2 + index.
+ENDIF.
+
+
+DATA(var) = diagram+index(2).
+DATA(var2) = diagram+position(2).
+DATA results  TYPE string_table.
+
+*get codes  for ex. ccdc
+DATA(word) = |{ var }| & |{ var2 }|.
+
+DATA:
+  index1 TYPE i,
+  length TYPE i,
+  char   TYPE c.
+length = strlen( word ).
+
+WHILE index1 < length.
+  char = word+index1(1).
+  TRANSLATE char TO LOWER CASE.
+  LOOP AT plants INTO DATA(ls).
+
+    IF ls-name+0(1) EQ char.
+      APPEND ls-name TO results.
+    ENDIF.
+  ENDLOOP.
+
+  ADD 1 TO index1.
+ENDWHILE.
+
+BREAK-POINT.
