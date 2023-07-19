@@ -30,3 +30,13 @@ do 64 times.
       result = result + square( sy-index ).
     enddo.
 ############################
+dna solution
+hamming_distance.
+
+    if strlen( first_strand ) <> strlen( second_strand ).
+      raise exception type cx_parameter_invalid.
+    endif.
+    result = reduce #( INIT r = 0 
+                       FOR i = 0 WHILE i < strlen( first_strand ) 
+                       NEXT r += cond #( when first_strand+i(1) <> second_strand+i(1) then 1 else 0 ) ).
+  ENDMETHOD.
