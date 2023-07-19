@@ -49,3 +49,24 @@ DO strlen( lv_text ) TIMES.
                                  ELSE                                                                             'Character' ).
   WRITE : / lv_single.
 ENDDO.
+##################################
+
+IF  strlen( first_strand ) = strlen( second_strand ).
+  DO strlen( first_strand ) TIMES.
+
+    IF substring( val = first_strand off = sy-index - 1 len = 1 ) <> substring( val = second_strand off = sy-index - 1 len = 1 ) .
+      result = result + 1.
+    ENDIF.
+  ENDDO.
+ELSE.
+  RAISE EXCEPTION TYPE cx_parameter_invalid.
+ENDIF.
+
+##############################
+ data(lv_len) = strlen( first_strand ).
+      DO lv_len times.
+        data(local_index) = sy-index - 1.
+        if ( first_strand+local_index(1) NE second_strand+local_index(1) ).
+          Add 1 to result.
+        endif.
+      enddo.
