@@ -19,3 +19,33 @@
     ENDLOOP.
   ENDMETHOD.
   ######################################################## ########################################################
+
+
+DATA: smth TYPE string VALUE `qwert1yua22sd123bnm,`,
+      index TYPE i,
+      length TYPE i,
+      char  TYPE c,
+      num   TYPE i.
+
+length = STRLEN( smth ).
+
+WHILE index < length.
+  char = smth+index(1).
+  TRY .
+      num = char.
+      WRITE: / num,'was a number'.
+    CATCH cx_sy_conversion_no_number.
+      WRITE: / char,'was no number'.
+  ENDTRY.
+  ADD 1 TO index.
+ENDWHILE.
+##############################################
+
+DATA: lv_text  TYPE string  VALUE `a7m4d0`.
+
+DO strlen( lv_text ) TIMES.
+  DATA(lv_single) = substring( val = lv_text off = sy-index - 1 len = 1 ) && ` is ` &&
+                    COND string( WHEN substring( val = lv_text off = sy-index - 1 len = 1 ) CO '0123456789' THEN 'Numeric'
+                                 ELSE                                                                             'Character' ).
+  WRITE : / lv_single.
+ENDDO.
