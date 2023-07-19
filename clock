@@ -1,0 +1,23 @@
+DATA gv_time TYPE tims.
+
+DATA: hours     TYPE i VALUE -8,
+      minutes   TYPE i VALUE -125,
+      input     TYPE i,
+      mv_result TYPE string.
+
+
+"CONSTRUCTOR
+gv_time = gv_time + hours * 3600 + minutes * 60.
+
+"GET
+DATA lv_result TYPE char8.
+WRITE gv_time TO lv_result.
+mv_result = lv_result+0(5).
+
+"ADD
+gv_time = gv_time + minutes * 60.
+
+"SUB
+gv_time = gv_time - minutes * 60.
+
+############################################################
