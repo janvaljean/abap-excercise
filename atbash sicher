@@ -1,0 +1,65 @@
+atbash sicher
+REPORT zsf_atbash_sicher.
+
+DATA: cipher_text  TYPE string  VALUE 'vcvix rhn'  .
+* exp = 'exercism'
+DATA: lv_pos    TYPE i,
+      lv_vokal  TYPE c,
+      lv_encode TYPE string,
+      lv_encode_space TYPE string,
+      lv_single TYPE string,
+      length    TYPE i,
+      index     TYPE i.
+
+length = strlen( cipher_text ).
+
+*decoding
+
+DO length TIMES.
+  lv_single = substring( val = cipher_text off = sy-index - 1 len = 1 ) .
+  IF sy-abcde CS lv_single.
+    lv_pos = 25 - sy-fdpos.
+    lv_vokal = sy-abcde+lv_pos(1).
+    TRANSLATE lv_vokal TO LOWER CASE.
+    lv_encode = |{ lv_encode }| & |{ lv_vokal }|.
+    ELSEIF lv_single ca '0123456789'.
+      lv_encode = |{ lv_encode }| & |{ lv_single }|.
+  ENDIF.
+  CLEAR lv_single.
+ENDDO.
+
+BREAK-POINT.
+
+*encoding
+
+*DO length TIMES.
+*  lv_single = substring( val = cipher_text off = sy-index - 1 len = 1 ) .
+*  IF sy-abcde CS lv_single.
+*    lv_pos = 25 - sy-fdpos.
+*    lv_vokal = sy-abcde+lv_pos(1).
+*    TRANSLATE lv_vokal TO LOWER CASE.
+*    lv_encode = |{ lv_encode }| & |{ lv_vokal }|.
+*    ELSEIF lv_single ca '0123456789'.
+*      lv_encode = |{ lv_encode }| & |{ lv_single }|.
+*  ENDIF.
+*  CLEAR lv_single.
+*ENDDO.
+*
+*CLEAR lv_single.
+*
+*
+*DO strlen( lv_encode ) TIMES.
+*
+*  DATA(lv_index) = sy-index - 1.
+*
+*  lv_single = substring( val = lv_encode off = lv_index len = 1 ).
+*
+*  IF lv_index MOD 5 = 0 AND lv_index <> 0.
+*    lv_encode_space = |{ lv_encode_space }| & | | & |{ lv_single }|.
+*
+*  ELSE.
+*    lv_encode_space = |{ lv_encode_space }| & |{ lv_single }|.
+*  ENDIF.
+*
+*ENDDO.
+*BREAK-POINT.
