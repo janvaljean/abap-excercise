@@ -58,8 +58,10 @@ BREAK-POINT.
 *    lv_encode_space = |{ lv_encode_space }| & | | & |{ lv_single }|.
 *
 *  ELSE.
-*    lv_encode_space = |{ lv_encode_space }| & |{ lv_single }|.
-*  ENDIF.
-*
-*ENDDO.
-*BREAK-POINT.
+*    lv_encode_space = |{ lv_encode_space }| & |{ lv_single }|.                            #
+*  ENDIF.                                                                                  #
+*                                                                                          #
+*ENDDO.                                                                                    #
+###########################################################################################
+
+
