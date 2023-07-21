@@ -1,0 +1,78 @@
+
+he North American Numbering Plan (NANP) is a telephone numbering system 
+(NXX)-NXX-XXXX
++1 (613)-995-0253
+n--> 2...9
+x--> 0...9
+#####################
+ "remove Permitted characters"
+    REPLACE ALL OCCURRENCES OF REGEX '[\(\)\-\. +]' IN result WITH ``.
+ REPLACE ALL OCCURRENCES OF '-' IN lv_string WITH ' '.
+   REPLACE ALL OCCURRENCES OF '+' IN lv_string WITH ' '.
+   REPLACE ALL OCCURRENCES OF '.' IN lv_string WITH ' '.
+   REPLACE ALL OCCURRENCES OF '(' IN lv_string WITH ' '.
+   REPLACE ALL OCCURRENCES OF ')' IN lv_string WITH ' '.
+##############
+FIND FIRST OCCURRENCE OF REGEX '\D' IN phone_number.
+###################
+ FIND REGEX '.*([2-9]\d{2}).*([2-9]\d{2}).*(\d{4})'
+      IN number
+      SUBMATCHES DATA(part1) DATA(part2) DATA(part3).
+    result = part1 && part2 && part3.
+ FIND REGEX '1*.*?([2-9]\d\d).*?([2-9]\d\d).*?(\d\d\d\d).*?(\d)*' IN number
+      SUBMATCHES DATA(p1) DATA(p2) DATA(p3) DATA(p4).
+    IF sy-subrc = 0 AND strlen( p4 ) = 0.
+      result = p1 && p2 && p3.
+    ELSE.
+      DATA(err) = NEW cx_parameter_invalid( ).
+      RAISE EXCEPTION ERR.
+    ENDIF.
+########################################
+result = replace( val = number with ='' regex = '[^\d]' occ = 0 ).
+    DATA(length) = strlen( result ).
+    IF length LT 10
+    OR length GT 11.
+      RAISE EXCEPTION TYPE cx_parameter_invalid.
+    ENDIF.
+    IF length GT 10.
+      IF result(1) NE 1.
+        RAISE EXCEPTION TYPE cx_parameter_invalid.
+      ENDIF.
+      length = length - 1.
+      result = result+1(length).
+    ENDIF.
+    IF result(1) EQ 0
+    OR result(1) EQ 1.
+      RAISE EXCEPTION TYPE cx_parameter_invalid.
+    ENDIF.
+    IF result+3(1) EQ 0
+    OR result+3(1) EQ 1.
+      RAISE EXCEPTION TYPE cx_parameter_invalid.
+    ENDIF.
+
+########################################################
+
+DATA(regx_check) = `(\+?( |-|\.)?1( |-|\.)?)?(\(?[2-9]\d{2}\)?)( |-|\.)?([2-9]\d{2}( |-|\.)?\d{4})`. 
+
+
+(\+?( |-|\.)?1( |-|\.)?)?: Bu bölüm, telefon numarasının başındaki ülke kodu için kullanılır. Parantez içindeki ? işareti, bu kısmın isteğe bağlı olabileceğini belirtir.
+
+\+?: Eğer varsa, telefon numarasının başında "+" karakteri olabilir.
+( |-|\.)?: Telefon numarasının başında bir boşluk, tire ya da nokta karakteri olabilir.
+1: Amerika Birleşik Devletleri'ndeki ülke kodu.
+( |-|\.)?: Ülke kodundan sonra bir boşluk, tire ya da nokta karakteri olabilir.
+(\(?[2-9]\d{2}\)?): Bu bölüm, alan kodunu temsil eder. Parantez içindeki ? işareti, parantezlerin isteğe bağlı olabileceğini belirtir.
+
+\(?: Eğer varsa, alan kodunun başında "(" karakteri olabilir.
+[2-9]: Alan kodu, "2" ile "9" arasında bir rakamla başlamalıdır.
+\d{2}: Alan kodu tam olarak iki rakamdan oluşmalıdır.
+\)?: Eğer varsa, alan kodunun sonunda ")" karakteri olabilir.
+( |-|\.)?: Alan kodundan sonra bir boşluk, tire ya da nokta karakteri olabilir.
+
+([2-9]\d{2}( |-|\.)?\d{4}): Bu bölüm, telefon numarasının geri kalan kısmını temsil eder.
+
+[2-9]: Telefon numarasının geri kalan kısmı, "2" ile "9" arasında bir rakamla başlamalıdır.
+\d{2}: Telefon numarasının geri kalan kısmı, iki rakamdan oluşmalıdır.
+( |-|\.)?: Telefon numarasının geri kalan kısmında bir boşluk, tire ya da nokta karakteri olabilir.
+\d{4}: Telefon numarasının geri kalan kısmı, tam olarak dört rakamdan oluşmalıdır.
+Bu regular expression, Amerika Birleşik Devletleri'ndeki telefon numaralarını doğrulamak için kullanılabilir. Ancak, başka ülkelerin telefon numaralarını doğrulamak için farklı regex ifadeleri gerekebilir, çünkü farklı ülkeler farklı telefon numarası formatlarına sahip olabilir.
