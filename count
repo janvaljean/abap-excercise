@@ -1,0 +1,37 @@
+DATA(lt_table) = VALUE string_table( ( |Sefa Kurtuldu| )
+                                     ( |Sinan Cem U Mike| ) ).
+
+FIND ALL OCCURRENCES OF 'u' IN TABLE lt_table RESULTS  DATA(lt_results) IGNORING CASE.
+
+BREAK-POINT.
+
+  ####################################
+   result = abap_true.
+*    DO strlen( phrase ) TIMES.
+*      DATA(pos)  = sy-index - 1.
+*      DATA(character) = to_upper( phrase+pos(1) ).
+*      IF sy-abcde cs character and count( val = to_upper( phrase ) regex = character ) > 1.
+*        result = abap_false.
+*        RETURN.
+*      ENDIF.
+*    ENDDO.
+
+  ######################################
+
+  data n type i.
+*    result = abap_true.
+*translate phrase to upper case.
+*WHILE n <= strlen( phrase ).
+*
+* DATA(lv_single) = substring( val = phrase off = sy-index - 1 len = 1 ).
+*if lv_single ca sy-abcde.
+*  FIND ALL OCCURRENCES OF lv_single IN phrase MATCH COUNT DATA(lv_count).
+*  IF lv_count > 1.
+*    result = abap_false.
+*    EXIT.
+*  ENDIF.
+*endif.
+*n += 1.
+*ENDWHILE._text off = sy-index - 1 len = 1 )
+  
+  ################################################
