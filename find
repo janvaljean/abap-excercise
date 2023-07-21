@@ -1,0 +1,8 @@
+DATA(lt_table) = VALUE string_table( ( |Sefa Kurtuldu| )
+                                     ( |Sinan Cem U Mike| ) ).
+
+FIND ALL OCCURRENCES OF 'u' IN TABLE lt_table RESULTS  DATA(lt_results) IGNORING CASE.
+
+BREAK-POINT.
+
+#############################
