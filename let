@@ -1,0 +1,8 @@
+METHOD raindrops.
+    result = COND #( LET res = |{ COND #( WHEN input MOD 3 = 0 THEN 'Pling' )
+                               }{ COND #( WHEN input MOD 5 = 0 THEN 'Plang' )
+                               }{ COND #( WHEN input MOD 7 = 0 THEN 'Plong' ) }| IN
+                     WHEN res = `` THEN input ELSE res ).
+  ENDMETHOD.
+
+#############################################
