@@ -35,3 +35,4 @@ BREAK-POINT.
 *ENDWHILE._text off = sy-index - 1 len = 1 )
   
   ################################################
+ count( val =  to_upper( ls_str-word )  regex = to_upper( lv_single ) ) <>   count( val =  to_upper( input )  regex = to_upper( lv_single ) ).
