@@ -5,4 +5,9 @@ FIND ALL OCCURRENCES OF 'u' IN TABLE lt_table RESULTS  DATA(lt_results) IGNORING
 
 BREAK-POINT.
 
-#############################
+###############################
+ FIND ALL OCCURRENCES OF lv_letter IN to_upper( input ) MATCH COUNT DATA(lv_in_input).
+
+FIND ALL OCCURRENCES OF lv_letter IN to_upper( ls_candidate ) MATCH COUNT DATA(lv_in_candidate).
+
+################################
