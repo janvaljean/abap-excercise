@@ -95,3 +95,17 @@ when ( year mod 4 = 0 ) then abap_true
   ENDIF.
 
 ###########################################################################
+ METHOD raindrops.
+  result = cond #( when ( input mod 3 = 0 )
+                   then 'Pling' ).
+  result = cond #( when ( input mod 5 = 0 )
+                   then |{ result }Plang|
+                   else result ).
+  result = cond #( when ( input mod 7 = 0 )
+                   then |{ result }Plong|
+                   else result ).
+  result = cond #( when result is initial
+                   then input
+                   else result ).
+  ENDMETHOD.
+###########################################################################################
