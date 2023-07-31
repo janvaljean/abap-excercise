@@ -1,0 +1,29 @@
+  METHOD anagram.
+
+result = candidates.
+
+LOOP AT candidates INTO DATA(ls_str) .
+  if to_upper( ls_str ) = to_upper( input ).
+    delete result WHERE table_line = ls_str.
+  endif.
+
+  IF strlen( input ) = strlen( ls_str ).
+    DO strlen( ls_str ) TIMES.
+      DATA(lv_index) = sy-index - 1.
+      DATA(lv_single) = substring( val = ls_str off = lv_index len = 1 ).
+      IF NOT input CS lv_single.
+          delete result WHERE table_line = ls_str.
+      elseif count( val =  to_upper( ls_str )  regex = to_upper( lv_single ) ) <> 
+             count( val =  to_upper( input )  regex = to_upper( lv_single ) ).
+          delete result WHERE table_line = ls_str.
+      ENDIF.
+    ENDDO.
+   ELSE.
+     delete result WHERE table_line = ls_str.
+  ENDIF.
+ENDLOOP.
+
+
+  ENDMETHOD.
+
+####################################################################
