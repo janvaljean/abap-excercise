@@ -1,0 +1,1 @@
+DELETE result WHERE table_line = ls_str.
