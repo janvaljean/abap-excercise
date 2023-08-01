@@ -1,0 +1,27 @@
+DATA(input) = '89 1903 3\n18 3 1\n9 4 800'.
+
+DATA(index) = 2.
+
+DATA lt_string_tab TYPE TABLE OF string.
+
+SPLIT string AT '\n' INTO TABLE DATA(itab).
+READ TABLE itab INTO DATA(wa)  INDEX index.
+
+SPLIT wa AT ' ' INTO TABLE lt_string_tab.
+result = VALUE #( FOR wa IN lt_string_tab ( wa ) ).
+*column
+
+*SPLIT input AT '\n' INTO TABLE DATA(itab).
+*  DATA(result) = VALUE stringtab( ).
+*
+*LOOP AT itab INTO DATA(ls_str).
+*
+*  SPLIT ls_str AT ' ' INTO TABLE DATA(str_tab).
+*
+*  READ TABLE str_tab INTO DATA(wa) INDEX index.
+*
+*
+*  result = VALUE #( BASE result ( wa ) ).
+*
+*ENDLOOP.
+#############################################
