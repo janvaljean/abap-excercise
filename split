@@ -25,3 +25,8 @@ result = VALUE #( FOR wa IN lt_string_tab ( wa ) ).
 *
 *ENDLOOP.
 #############################################
+SPLIT string AT `\n` INTO TABLE DATA(lt_string).
+    SPLIT lt_string[ index ] AT space INTO TABLE DATA(lt_row).
+#####################################
+
+
