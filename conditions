@@ -109,3 +109,7 @@ when ( year mod 4 = 0 ) then abap_true
                    else result ).
   ENDMETHOD.
 ###########################################################################################
+ result = SWITCH #( count WHEN 1 THEN |{ result }{ lv_single1 }|
+                                        ELSE |{ result }{ count }{ lv_single1 }| ).
+###########################################################################################
+
