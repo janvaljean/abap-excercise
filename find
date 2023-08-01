@@ -11,3 +11,47 @@ BREAK-POINT.
 FIND ALL OCCURRENCES OF lv_letter IN to_upper( ls_candidate ) MATCH COUNT DATA(lv_in_candidate).
 
 ################################
+ data(remaining_string) = input.
+    while remaining_string is not initial.
+      find regex '([\w\s])'   "Find a word character (A-z,numbers,underscore) or whitespace
+              && '(\1*)'      "followed by the thing we just found, zero or more times
+              && '(.*)'       "and the rest of the string
+        in remaining_string 
+        submatches character duplicates remaining_string  ##SUBRC_OK.
+      if duplicates is not initial.
+        result = |{ result }{ strlen( duplicates ) + 1 }{ character }|.
+      else.
+        result = |{ result }{ character }|.
+      endif.
+    endwhile.
+########################################
+ data(remaining_string) = input.
+    while remaining_string is not initial.
+      find regex '(\d*)([\w\s])(.*)' 
+        in remaining_string 
+        submatches repetitions character remaining_string  ##SUBRC_OK.
+      if repetitions is not initial.
+        result = |{ result }{ repeat( val = character occ = repetitions ) }|.
+      else.
+        result = |{ result }{ character }|.
+      endif.
+#####################################
+METHOD decode.
+    DATA(inp) = input.
+    DO.
+      IF inp IS INITIAL.
+        EXIT.
+      ENDIF.
+      FIND REGEX '^([0-9]+)([A-Za-z ])' IN inp SUBMATCHES DATA(len) DATA(chr).
+      IF sy-subrc = 0.
+        DO len TIMES.
+          result = result && chr.
+        ENDDO.
+        SHIFT inp LEFT BY ( strlen( len ) + 1 ) PLACES.
+      ELSE.
+        result = result && inp(1).
+        SHIFT inp LEFT.
+      ENDIF.
+    ENDDO.
+  ENDMETHOD.
+############################################
