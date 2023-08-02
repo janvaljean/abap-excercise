@@ -1,1 +1,9 @@
 DATA(it_elem) = VALUE stringtab( ).
+#########################################
+*  CALL FUNCTION 'CONVERT_STRING_TO_TABLE'  "Convert string to table
+*    EXPORTING
+*          I_STRING  = ls_str
+*          I_TABLINE_LENGTH  = strlen( ls_str )
+*    TABLES
+*          ET_TABLE  = itab.
+###################################################
