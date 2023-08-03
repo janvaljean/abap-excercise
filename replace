@@ -1,0 +1,1 @@
+    data(rep) = replace( val = ls_str off = sy-index - 1  with = '1'  ).
