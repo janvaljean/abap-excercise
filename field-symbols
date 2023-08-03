@@ -1,0 +1,3 @@
+LOOP AT itab ASSIGNING FIELD-SYMBOL(<ls_itab>).
+    <ls_itab> = <ls_itab> + 1.
+  ENDLOOP.
