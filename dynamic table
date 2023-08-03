@@ -1,0 +1,42 @@
+DATA(input) = VALUE string_table( ( `   k  ` )
+                                  ( ` * m  ` )
+                                  ( `2  3 s` )   ).
+
+
+DATA lt_components TYPE abap_component_tab.
+DATA ls_component LIKE LINE OF lt_components.
+
+DATA l_ref_tab TYPE REF TO data.
+DATA l_ref_line TYPE REF TO data.
+
+FIELD-SYMBOLS <lt_tab> TYPE STANDARD TABLE.
+FIELD-SYMBOLS <ls_line>.
+
+DO strlen( input[ 1 ] ) TIMES.
+  ls_component-name = |C{ sy-index }|.
+  ls_component-type = cl_abap_elemdescr=>get_c( p_length = 1 ).
+  APPEND ls_component TO lt_components.
+ENDDO.
+
+TRY .
+    DATA(lo_structure) = cl_abap_structdescr=>create( p_components = lt_components ).
+    DATA(lo_table_type) = cl_abap_tabledescr=>create( p_line_type  = lo_structure ).
+
+  CATCH cx_sy_struct_creation.
+ENDTRY.
+
+CREATE DATA l_ref_tab TYPE HANDLE lo_table_type.
+ASSIGN l_ref_tab->* TO <lt_tab>.
+CREATE DATA l_ref_line LIKE LINE OF <lt_tab>.
+ASSIGN l_ref_line->* TO <ls_line>.
+
+LOOP AT input INTO DATA(ls_str).
+  LOOP AT lt_components INTO ls_component.
+    ASSIGN COMPONENT ls_component-name OF STRUCTURE <ls_line> TO FIELD-SYMBOL(<fs>).
+    <fs> = substring( val = ls_str off = sy-tabix - 1 len = 1 ).
+  ENDLOOP.
+
+  APPEND  <ls_line> TO <lt_tab>.
+ENDLOOP.
+
+BREAK-POINT.
