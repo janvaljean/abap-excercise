@@ -1,2 +1,9 @@
 reading itabs line that name is sefa. 
-data(wa_read) = itab[ name = 'sefa' ]
+data(wa_read) = value #(itab[ name = 'sefa' ]).
+
+when name = esra is not found, with optional keyword damp prevented. 
+data(wa_read)= value #( itab [ name = 'esra' ] optional ). 
+
+when esra not found , you can set default value
+data(wa_default) = value #( name = 'aaa' role = 'b').
+data(wa_read) = value #( itab[ name = 'jack' ]  default wa_default ).
