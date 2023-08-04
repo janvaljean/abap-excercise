@@ -1,1 +1,4 @@
-it_data[ name = 'sefa' ] = 'jack'.
+it_data[ name = 'sefa' ] = 'jack'.--> others can be empty.
+
+it_data[ name = 'sefa' ]-name = 'jack'.
+
