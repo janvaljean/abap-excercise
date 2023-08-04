@@ -1,0 +1,29 @@
+
+corresponding and mapping
+
+TYPES: BEGIN OF ty_data1,
+         c1 TYPE i,
+         c2 TYPE i,
+         c3 TYPE i,
+         c4 TYPE i,
+       END OF ty_data1.
+
+TYPES: BEGIN OF ty_data2,
+         c1 TYPE i,
+         c3 TYPE i,
+         c5 TYPE i,
+         c7 TYPE i,
+       END OF ty_data2.
+
+DATA: itab1 TYPE TABLE OF ty_data1.
+DATA: itab2 TYPE TABLE OF ty_data2.
+
+itab1 = VALUE #( ( c1 = 1 c2 = 2 c3 = 3 c4 = 4 )
+( c1 = 11 c2 = 22 c3 = 33 c4 = 44 ) ).
+
+"itab2 = CORRESPONDING #( itab1 ).
+" c1 and c3 filled c5 and c7 empty
+itab2 = corresponding #( itab1 mapping c5 = c1 c7 = c2 ).
+itab2 = corresponding #( itab1 mapping c5 = c1 c7 = c2 EXCEPT c1 ).
+
+cl_demo_output=>display( itab2 ).
