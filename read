@@ -1,0 +1,2 @@
+reading itabs line that name is sefa. 
+data(wa_read) = itab[ name = 'sefa' ]
