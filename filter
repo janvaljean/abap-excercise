@@ -1,0 +1,14 @@
+students are that  name is sefa
+
+data(filtered_itab) = Filter#(itab where name = 'sefa')
+
+students are that name isnt sefa
+
+data(filtered_itab) = filter#(itab except where name = 'sefa')
+########
+data: itab2 type sorted table of char01 with none uniqe-key table line
+
+itab2 = value #( ('A') ( 'P' ) )
+
+
+data(filtered_itab) = filter#(itab in itab2 WHERE NAME = table_line)
