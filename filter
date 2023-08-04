@@ -6,9 +6,16 @@ students are that name isnt sefa
 
 data(filtered_itab) = filter#(itab except where name = 'sefa')
 ########
+data 
 data: itab2 type sorted table of char01 with none uniqe-key table line
+
+itab = value #(( name = 'sefa' point= 'A')
+( name = 'sefa' point= 'B')
+( name = 'sefa' point= 'A')
+( name = 'sefa' point= 'B')( name = 'sefa' point= 'A')( name = 'sefa' point= 'B')
+( name = 'sefa' point= 'P')( name = 'sefa' point= 'P')( name = 'sefa' point= 'A'))
 
 itab2 = value #( ('A') ( 'P' ) )
 
 
-data(filtered_itab) = filter#(itab in itab2 WHERE NAME = table_line)
+data(filtered_itab) = filter#(itab in itab2 WHERE points = table_line)
