@@ -20,9 +20,11 @@ data(it_data2) = value tt_data( for wa in it_data where ( c1 > 30 ) ( wa ) ).
 data(it_data3) = value tt_data( for wa in it_data index into lv_index where c1 = 20 ( lines of it_data from lv_index ) ).
 
 data(it_data4) = value tt_data4( for wa in it_data from 2 to 5 ( c1 = wa-c1 c2 = wa-c2 ) ).
+##################
+one column table
 
 types: tt_i type table of i with empty key.
 data(it_data5) = value tt_i( for wa in it_data ( wa-c1 )).
-
+##################
 
 cl_demo_output=>display( it_data4 ).
