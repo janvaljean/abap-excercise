@@ -13,3 +13,36 @@ BREAK-POINT.
 ENDIF.
 
 serdar üstadimin tipleri.
+
+###################################################
+TYPES : BEGIN OF ty_data,
+          name TYPE string,
+          role TYPE string,
+        END OF ty_data.
+
+DATA: it_data TYPE STANDARD TABLE OF ty_data.
+
+it_data = VALUE #( ( name = 'sefa' role = 'abap'  )
+( name = 'jack' role = 'java'  )
+( name = 'ryan' role = 'python'  )
+ ).
+
+1########"data(result) = it_data[ name = 'sefa' ].
+2#########"data(result) = it_data[ name = 'sefa' ]-role.
+3#########TRY .
+    DATA(result) = it_data[ name = 'sef' ].
+
+  CATCH cx_sy_itab_line_not_found.
+    WRITE 'not found'.
+
+ENDTRY.
+
+4###########IF line_exists( it_data[ name = 'sefa' ] ).
+  WRITE '\nline exist'.
+ELSE.
+  WRITE 'line not found'.
+ENDIF.
+
+5##################
+data(lv_index) = line_index( it_data[ name = 'sefa' ] )
+########################
