@@ -1,0 +1,28 @@
+"SELECT * FROM sflight INTO TABLE @DATA(it_sflight).
+
+"SELECT carrid,connid,seatsmax,seatsocc FROM sflight INTO TABLE @DATA(it_sflight).
+
+"SELECT carrid as airline_id,
+"      connid,
+"     seatsmax,
+"    seatsocc FROM sflight INTO TABLE @DATA(it_sflight).
+
+DATA: amount type sflight-price VALUE 100.
+
+SELECT carrid AS airline_id,
+       connid,
+  price,
+  currency,
+  CASE
+  WHEN currency = 'USD'
+  "then price + 100 end as final_price,
+  then price + @amount end as final_price,
+       seatsmax AS maximum_seats,
+        CASE
+          WHEN seatsmax > 350
+  THEN 'max' END AS status,
+  case
+  WHEN seatsmax - seatsocc < 20
+  then seatsmax - seatsocc end as seats_remain,
+
+       seatsocc  FROM sflight ORDER BY status DESCENDING INTO TABLE @DATA(it_sflight).
