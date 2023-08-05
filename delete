@@ -1,1 +1,3 @@
 DELETE result WHERE table_line = ls_str.
+
+delete from zemployee.
