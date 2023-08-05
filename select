@@ -28,6 +28,27 @@ SELECT carrid AS airline_id,
        seatsocc  FROM sflight ORDER BY status DESCENDING INTO TABLE @DATA(it_sflight).
 ############################################
 
+cl_demo_input=>request( CHANGING field = carrid ).
+
+SELECT carrid,
+       'test' && carrid as test_field,
+       connid,
+       seatsmax,
+       seatsmax - seatsocc as seats_remain,
+       seatsocc
+       FROM sflight
+       WHERE carrid = @carrid
+       INTO TABLE @DATA(it_sflight).
+
+
+
+cl_demo_output=>display( it_sflight ).
+###########################################
+data: carrid type spfli-carrid value = 'aaa'
+data: connid type spfli-connid value = '0064'
+select single @abap_true from spfli  where carrid = @( to_upper( carrid ) ) and connid = @connid into @data(lv_exist)
+ ################################################
+
 "delete  from it_sflight.
 DATA: carrid TYPE sflight-carrid VALUE 'AA'.
 
