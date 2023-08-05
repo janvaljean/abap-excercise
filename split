@@ -19,8 +19,6 @@ result = VALUE #( FOR wa IN lt_string_tab ( wa ) ).
 *  SPLIT ls_str AT ' ' INTO TABLE DATA(str_tab).
 *
 *  READ TABLE str_tab INTO DATA(wa) INDEX index.
-*
-*
 *  result = VALUE #( BASE result ( wa ) ).
 *
 *ENDLOOP.
@@ -28,5 +26,7 @@ result = VALUE #( FOR wa IN lt_string_tab ( wa ) ).
 SPLIT string AT `\n` INTO TABLE DATA(lt_string).
     SPLIT lt_string[ index ] AT space INTO TABLE DATA(lt_row).
 #####################################
+data: lv_data type string value 'sefa,john,jack'
 
+data(lv_result) = segment( val = lv_data index = 2 sep = ',' )
 
