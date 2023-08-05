@@ -28,5 +28,20 @@ SPLIT string AT `\n` INTO TABLE DATA(lt_string).
 #####################################
 data: lv_data type string value 'sefa,john,jack'
 
-data(lv_result) = segment( val = lv_data index = 2 sep = ',' )
+data(lv_result) = segment( val = lv_data index = 2 sep = ',' ) --> john
+data(lv_result) = segment( val = lv_data index = -2 sep = ',' ) --> john
+
+DO  .
+
+  TRY .
+    lv_result = segment( val = lv_data index = sy-index sep = ',' ).
+    APPEND lv_result to itab.
+
+  CATCH cx_sy_strg_par_val.
+EXIT.
+  ENDTRY.
+
+ENDDO.
+
+cl_demo_output=>display( itab ).
 
