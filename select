@@ -26,3 +26,4 @@ SELECT carrid AS airline_id,
   then seatsmax - seatsocc end as seats_remain,
 
        seatsocc  FROM sflight ORDER BY status DESCENDING INTO TABLE @DATA(it_sflight).
+############################################
