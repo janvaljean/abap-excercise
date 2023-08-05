@@ -20,6 +20,12 @@ insert zemployee from wa_employee.
 4#######
 insert zemployee from @( value#( id = 6 name = 'hans' role = 'c++')).
 insert zemployee from @( value#( id = 7 name = 'jane' )).
+5########################
+insert zemployee  from table it_employee.
+#####
+insert zemployee from table it_employee  accepting duplicate keys
+######
+insert zemployee2 from( select * from  zemployee ).
 
 
 
