@@ -68,3 +68,15 @@ SELECT carrid,
 
 cl_demo_output=>display( it_sflight ).
 ################################################################
+data: countryfr type spfli-countryfr value 'US'
+select * from spfli where counttrfr = @( to_upper( countryfr ) ) 
+                     into table @data(it_spfli).
+
+if it_spfli is not initial.
+select carrid,connid,fldate from sflight
+                            for all entries in @it_spfli
+                            where carrid = @it_spfli-carrid and connid = @it_spfli-connid
+                            into table @data(it_sflight).
+
+endif.
+data(lines) = lines( it_sflight )
