@@ -80,3 +80,14 @@ select carrid,connid,fldate from sflight
 
 endif.
 data(lines) = lines( it_sflight )
+
+#################################################
+join
+#############################
+select a~carrname,b~carrid,b~connid
+       from scarr as a
+       inner join spfli as b
+       on b~carrid = a~carrid
+       into table @data(it_final).
+
+cl_demo_output=>display( it_final ).
