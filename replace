@@ -1,1 +1,5 @@
     data(rep) = replace( val = ls_str off = sy-index - 1  with = '1'  ).
+DATA(lv_str) = replace( val = to_lower( phrase ) sub = `'` with = space occ = 0 ).
+    lv_str = replace( val = lv_str sub = `\n` with = ` ` occ = 0 ).
+    lv_str = replace( val = lv_str sub = `\t` with = ` ` occ = 0 ).
+    lv_str = replace( val = lv_str regex = `[^a-z0-9]` with = ` ` occ = 0 ).
