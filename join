@@ -1,0 +1,46 @@
+select a~carrname,b~carrid,b~connid
+       from scarr as a
+       inner join spfli as b
+       on b~carrid = a~carrid
+       into table @data(it_final).
+
+cl_demo_output=>display( it_final ).
+
+#####################################
+select  from scarr as a
+        inner join spfli as b
+        on a~carrid = b~carrid
+        fields a~carrid
+                b~carrid
+                b~connid
+        into table @data(itab)
+
+#############################################
+select a~carrname, b~carrid, b~connid,c~fldate from 
+                  ( ( scarr as a
+                      inner join spfli as b
+                      on b~carrid  = a~carrid )
+                      inner join sflight as c
+                        on  c~carrid = b~carrid and c~connid = b~connid )
+                      into table @data(it_final)
+
+#############################
+types : begin of ty_final,
+  fldate type sflight-fldate,
+  carrname type scarr-carrname,
+  carrid type spfli-carrid,
+connid type spfli-connid,
+en fo ty_final.
+data:  itfinal type table of ty_final.
+
+select a~carrname, b~carrid, b~connid,c~fldate from 
+                  ( ( scarr as a
+                      inner join spfli as b
+                      on b~carrid  = a~carrid )
+                      inner join sflight as c
+                        on  c~carrid = b~carrid and c~connid = b~connid )
+                      into corresponding fields of table @it_final order by carrname.
+
+
+
+                      )
