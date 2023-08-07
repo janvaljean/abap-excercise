@@ -36,3 +36,8 @@ BREAK-POINT.
   
   ################################################
  count( val =  to_upper( ls_str-word )  regex = to_upper( lv_single ) ) <>   count( val =  to_upper( input )  regex = to_upper( lv_single ) ).
+##################################
+
+data(rv_result) = count( val   = word
+                     regex = `(\s\S|^\S)` ).
+########################
