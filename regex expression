@@ -1,9 +1,5 @@
 
-he North American Numbering Plan (NANP) is a telephone numbering system 
-(NXX)-NXX-XXXX
-+1 (613)-995-0253
-n--> 2...9
-x--> 0...9
+lv_str = replace( val = lv_str regex = `[^a-z0-9]` with = ` ` occ = 0 ).
 #####################
  "remove Permitted characters"
     REPLACE ALL OCCURRENCES OF REGEX '[\(\)\-\. +]' IN result WITH ``.
