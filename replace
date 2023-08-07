@@ -6,3 +6,6 @@ DATA(lv_str) = replace( val = to_lower( phrase ) sub = `'` with = space occ = 0 
  REPLACE ALL OCCURRENCES OF REGEX `\\[tn]|,` IN TEXT WITH ` `.
     REPLACE ALL OCCURRENCES OF REGEX `[^\w+\s]` IN TEXT WITH ``.
     CONDENSE TEXT.
+ REPLACE ALL OCCURRENCES OF '\n' IN phrase WITH ' '.
+    REPLACE ALL OCCURRENCES OF REGEX |[,]| IN phrase WITH | |.
+    REPLACE ALL OCCURRENCES OF REGEX |[!&@#$%^&*()_+=':;/.?]|
