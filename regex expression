@@ -1,5 +1,7 @@
-
+DATA(lv_str) = replace( val = to_lower( phrase ) sub = `'` with = space occ = 0 ).
 lv_str = replace( val = lv_str regex = `[^a-z0-9]` with = ` ` occ = 0 ).
+or
+data(line) = condense( val = phrase from = `,.:!` ).
 #####################
  "remove Permitted characters"
     REPLACE ALL OCCURRENCES OF REGEX '[\(\)\-\. +]' IN result WITH ``.
