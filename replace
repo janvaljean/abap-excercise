@@ -3,3 +3,6 @@ DATA(lv_str) = replace( val = to_lower( phrase ) sub = `'` with = space occ = 0 
     lv_str = replace( val = lv_str sub = `\n` with = ` ` occ = 0 ).
     lv_str = replace( val = lv_str sub = `\t` with = ` ` occ = 0 ).
     lv_str = replace( val = lv_str regex = `[^a-z0-9]` with = ` ` occ = 0 ).
+ REPLACE ALL OCCURRENCES OF REGEX `\\[tn]|,` IN TEXT WITH ` `.
+    REPLACE ALL OCCURRENCES OF REGEX `[^\w+\s]` IN TEXT WITH ``.
+    CONDENSE TEXT.
