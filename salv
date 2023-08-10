@@ -1,0 +1,20 @@
+IF go_salv IS NOT BOUND.
+
+    TRY.
+        cl_salv_table=>factory(
+          EXPORTING
+            r_container    = NEW cl_gui_custom_container( container_name = 'container name' )
+          IMPORTING
+            r_salv_table   = go_salv
+          CHANGING
+            t_table        = gt_angstellter
+      ).
+
+      CATCH cx_salv_msg.
+    ENDTRY.
+
+    go_salv->get_columns( )->set_optimize( ).
+
+    go_salv->get_columns( )->get_column( 'MANDT' )->set_technical( ).
+
+    go_salv->get_functions( )->set_all( ).
