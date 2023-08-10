@@ -1,24 +1,18 @@
+🟥 🟧 🟨 🟩 🟦 We have connected our internal table to SALV":🟥 🟧 🟨 🟩 🟦
+
+DATA: gt_sbook TYPE TABLE OF sbook,
+      go_salv  TYPE REF TO cl_salv_table.
 
 
-IF go_salv IS NOT BOUND.
+START-OF-SELECTION.
 
-    TRY.
-        cl_salv_table=>factory(
-          EXPORTING
-            r_container    = NEW cl_gui_custom_container( container_name = 'container name' )
-          IMPORTING
-            r_salv_table   = go_salv--> optional
-          CHANGING
-            t_table        = gt_angstellter
-      ).
+  cl_salv_table=>factory(
 
-      CATCH cx_salv_msg.
-    ENDTRY.
+    IMPORTING
+      r_salv_table   = go_salv                          " Basisklasse einfache ALV Tabellen
+    CHANGING
+      t_table        = gt_sbook
+  ).
 
-    go_salv->get_columns( )->set_optimize( ).--> anpassen
 
-    go_salv->get_columns( )->get_column( 'MANDT' )->set_technical( ).--> hidden
-
-    go_salv->get_functions( )->set_all( ).
-
-  go_salv->display( ).
+🟥 🟧 🟨 🟩 🟦
