@@ -60,3 +60,20 @@ START-OF-SELECTION.
 🚩    lo_display->set_list_header( value = 'My First Salv Header Text' ).
 
     go_salv->display(  ).
+
+🟥 🟧 🟨 🟩 🟦 make modifications regarding the ALV 
+🟥 🟧 🟨 🟩 🟦 Änderungen im Hinblick auf den ALV (ABAP List Viewer).
+
+✔️zebra column --> lo_display->set_striped_pattern( value = 'X' ).
+✔️column optimized --> DATA: lo_cols TYPE REF TO cl_salv_columns.
+
+                                  lo_cols = go_salv->get_columns( ).
+                                  lo_cols->set_optimize( value = 'X' ).
+
+
+
+
+
+
+
+
