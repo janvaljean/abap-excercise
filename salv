@@ -1,4 +1,5 @@
-🟥 🟧 🟨 🟩 🟦 We have connected our internal table to SALV":🟥 🟧 🟨 🟩 🟦
+🟥 🟧 🟨 🟩 🟦 We have connected our internal table to SALV":
+🟥 🟧 🟨 🟩 🟦Wir haben unseren internen Tabellen an SALV angeschlossen.
 
 DATA: gt_sbook TYPE TABLE OF sbook,
       go_salv  TYPE REF TO cl_salv_table.
@@ -15,4 +16,47 @@ START-OF-SELECTION.
   ).
 
 
-🟥 🟧 🟨 🟩 🟦
+🟥 🟧 🟨 🟩 🟦 we have effectively displayed an internal table on the screen using the SALV class.
+🟥 🟧 🟨 🟩 🟦 Sie haben eine interne Tabelle mithilfe der SALV-Klasse effektiv auf dem Bildschirm angezeigt.
+
+DATA: gt_sbook TYPE TABLE OF sbook,
+      go_salv  TYPE REF TO cl_salv_table.
+
+🚩 SELECT * UP TO 20 ROWS from sbook INTO TABLE gt_sbook.
+
+START-OF-SELECTION.
+
+  cl_salv_table=>factory(
+
+    IMPORTING
+      r_salv_table   = go_salv       " Basisklasse einfache ALV Tabellen                 
+    CHANGING
+      t_table        = gt_sbook
+  ).
+
+  🚩  go_salv->display(  ).
+
+🟥 🟧 🟨 🟩 🟦 Before using the display method, we need to make modifications regarding the ALV 
+🟥 🟧 🟨 🟩 🟦 Bevor wir die display Methode verwenden, müssen wir Änderungen im Hinblick auf den ALV (ABAP List Viewer) vornehmen.
+
+DATA: gt_sbook TYPE TABLE OF sbook,
+      go_salv  TYPE REF TO cl_salv_table.
+
+SELECT * UP TO 20 ROWS from sbook INTO TABLE gt_sbook.
+
+START-OF-SELECTION.
+
+  cl_salv_table=>factory(
+
+    IMPORTING
+      r_salv_table   = go_salv                          " Basisklasse einfache ALV Tabellen
+    CHANGING
+      t_table        = gt_sbook
+  ).
+
+🚩    DATA: lo_display TYPE REF TO cl_salv_display_settings.
+
+🚩    lo_display = go_salv->get_display_settings( ).
+🚩    lo_display->set_list_header( value = 'My First Salv Header Text' ).
+
+    go_salv->display(  ).
