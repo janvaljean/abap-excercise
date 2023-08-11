@@ -70,10 +70,40 @@ START-OF-SELECTION.
                                   lo_cols = go_salv->get_columns( ).
                                   lo_cols->set_optimize( value = 'X' ).
 
+🟥 🟧 🟨 🟩 🟦Adding to header in alv
+🟥 🟧 🟨 🟩 🟦einen Titel hinzufügen
+
+    🚩  DATA: lo_header TYPE REF TO cl_salv_form_layout_grid,
+    🚩 lo_h_label TYPE REF TO cl_salv_form_label,
+    🚩 lo_h_flow TYPE REF TO cl_salv_form_layout_flow.
+
+     ✔️ create OBJECT lo_header.
+
+     lo_h_label = lo_header->create_label(  row = 1  column  = 1 ).
+     lo_h_label->set_text( value = 'header first line' ).
+     lo_h_flow = lo_header->create_flow(  row = 2  column  = 1 ).
+     lo_h_flow->create_text(
+             	 EXPORTING
+                            text     = 'Header second line'
+                   ).
+
+     ✔️go_salv->set_top_of_list( value = lo_header ).
+
+🟥 🟧 🟨 🟩 🟦 to show alv as a pop up
+🟥 🟧 🟨 🟩 🟦 ALV als Pop-up anzeigen
+
+          🚩  go_salv->set_screen_popup(
+                               EXPORTING
+                                        start_column = 10
+                                        end_column   = 150
+                                        start_line   = 50
+                                        end_line     = 10
+                                    ).
 
 
 
+🟥 🟧 🟨 🟩 🟦
 
-
-
-
+https://tools.eu1.hana.ondemand.com/latest
+✔️
+🚩
