@@ -1,0 +1,29 @@
+REPORT zsf_dynamic_screen.
+
+TABLES bkpf.
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
+PARAMETERS: p_rad1 RADIOBUTTON GROUP g1 USER-COMMAND test DEFAULT 'X',
+            p_rad2 RADIOBUTTON GROUP g1.
+
+SELECT-OPTIONS: s_belnr FOR bkpf-belnr MODIF ID abc.
+PARAMETERS: p_bukrs TYPE bkpf-bukrs MODIF ID xyz.
+SELECTION-SCREEN END OF  BLOCK b1.
+
+AT SELECTION-SCREEN OUTPUT.
+  IF p_rad1 = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'ABC'.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+  IF p_rad2 = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'XYZ'.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
