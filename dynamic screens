@@ -66,3 +66,27 @@ AT SELECTION-SCREEN OUTPUT.
 
 
   ENDIF.
+🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦
+tables mara.
+parameters p_rad radiobuttoon group a.
+
+select-options: s_scr1 for mara-matnr.
+select-options: s_scr2 for mara-entar.
+select-options: s_scr3 for mara-aekik.
+
+parameters p_rad1 radiobutton group a.
+select-options: s_scr4 for mara-/vso/r_stack_no.
+select-options: s_scr5 for mara-/bevl/luldegrp.
+select-options: s_scr6 for  mara-/bevl/luleinh
+
+parameters: p_input  type mara-/bevl/luldegrp.
+
+at selection-screen-output.
+ loop at screen.
+            if p_rad = 'X'.
+                        if screen_name CS 's_scr4' or screen_name CS 's_scr5' or screen_name CS 's_scr6'.
+                                    screen-active = 0.
+                                    modify screen.
+                        endif.
+            endif.
+endloop-
