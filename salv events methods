@@ -1,0 +1,65 @@
+CLASS gcl_salv_event_handler DEFINITION.
+  PUBLIC SECTION.
+
+* Doppelklick
+    CLASS-METHODS: on_double_click FOR EVENT double_click OF cl_salv_events_table
+      IMPORTING
+        row
+        column
+        sender.
+* Link-Klick
+    CLASS-METHODS: on_link_click FOR EVENT link_click OF cl_salv_events_table
+      IMPORTING
+        row
+        column
+        sender.
+
+    CLASS-METHODS: on_added_fuction FOR EVENT added_function OF cl_salv_events_table
+      IMPORTING
+        e_salv_function
+        sender.
+
+ENDCLASS.
+
+
+CLASS gcl_salv_event_handler IMPLEMENTATION.
+
+  METHOD on_double_click.
+
+    CHECK row > 0.
+
+
+  ENDMETHOD.
+
+  METHOD on_link_click.
+
+    CHECK row > 0.
+
+    gs_angstellter = gt_angstellter[ row ].
+
+    CALL SCREEN 0200.
+
+  ENDMETHOD.
+
+  METHOD on_added_fuction.
+
+    CASE e_salv_function.
+      WHEN 'SAVE'.
+        IF lines( gt_angstellter ) = 0.
+          MESSAGE 'personel eklemediniz!' TYPE 'I' DISPLAY LIKE 'E'.
+          RETURN.
+        ENDIF.
+
+        MODIFY zsf_angest_list FROM TABLE gt_angstellter.
+        COMMIT WORK AND WAIT.
+
+        IF sy-subrc = 0.
+          MESSAGE 'Erfolgreich' TYPE 'I'.
+        ENDIF.
+
+      WHEN OTHERS.
+    ENDCASE.
+
+  ENDMETHOD.
+
+ENDCLASS.
