@@ -1,0 +1,19 @@
+data age type i. 
+data: gv_id  type vrm_id,
+      gt_values type vrm_values,
+      gs_value type  vrm_value.
+data gv_ind type i.
+
+
+gv_ind = 10.
+do 60 times.
+    gs_value-key = gv_ind.
+    gs_value-text = gv_ind.
+    append gs_value to gt_values.
+    gv_ind = gv_ind + 1.
+enddo.
+
+call function 'vrm set values'
+        exporting
+        id = gv_id
+        values = gt_values.
