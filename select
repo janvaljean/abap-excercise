@@ -91,3 +91,17 @@ select a~carrname,b~carrid,b~connid
        into table @data(it_final).
 
 cl_demo_output=>display( it_final ).
+
+📕 📗 📘 📙📕 📗 📘 📙📕 📗 📘 📙📕 📗 📘 📙
+get ein row . die  meine parameters passt.
+data gs_sflight type sflight.
+
+parameters: p_connid type sflight-connid,
+            p_carrid type sflight-carrid,
+            p_fldate type sflight-fldate.
+start of selection.
+select single * from sflight into gs_sflight
+       where carrid eq p_carrid and
+              connid eq p_connid and
+              fldate eq p_fldate.
+📕 📗 📘 📙📕 📗 📘 📙📕 📗 📘 📙📕 📗 📘 📙
