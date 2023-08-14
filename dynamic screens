@@ -27,3 +27,42 @@ AT SELECTION-SCREEN OUTPUT.
       ENDIF.
     ENDLOOP.
   ENDIF.
+
+🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦🟥 🟧 🟨 🟩 🟦
+
+  IF gv_rad1 = abap_true.
+    LOOP AT SCREEN.
+      IF screen-name = 'GS_ANGSTELLTER-ID'.  "Screen layout items name
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+
+      IF screen-name = 'LV_TEXT_ID'.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+      IF screen-name = 'BTN2'.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+
+  ELSEIF gv_rad2 = abap_true.
+    LOOP AT SCREEN.
+      IF screen-name = 'GS_ANGSTELLTER-ID'.
+        screen-active = 1.
+        MODIFY SCREEN.
+      ENDIF.
+
+      IF screen-name = 'LV_TEXT_ID'.
+        screen-active = 1.
+        MODIFY SCREEN.
+      ENDIF.
+       IF screen-name = 'BTN1'.
+        screen-active = 0.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+
+
+  ENDIF.
