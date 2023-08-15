@@ -34,3 +34,36 @@ MODULE user_command_0100 INPUT.
       ENDIF.
 
   ENDCASE.
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+visible function salv buttons
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+TRY.
+            go_salv->get_functions( )->set_function(
+              EXPORTING
+                name    = 'SAVE'                " ALV Funktion
+                boolean =  abap_true           " boolische Variable (X=true, space=false)
+            ).
+
+          CATCH cx_salv_not_found.  " ALV: Allg. Fehlerklasse (wird bei Syntaxprüfung geprüft)
+          CATCH cx_salv_wrong_call. " ALV: Allg. Fehlerklasse (wird bei Syntaxprüfung geprüft)
+        ENDTRY.
+
+        go_salv->get_columns( )->set_optimize( ).
+        go_salv->refresh( ).
+
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+add function salv buttons
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+TRY.
+        go_salv->get_functions( )->add_function(
+          EXPORTING
+            name     = 'SAVE'               " ALV Funktion
+            icon     = CONV #( icon_system_save )
+            text     = 'Speichern auf DB'
+            tooltip  = 'Speichern auf DB'
+            position = if_salv_c_function_position=>right_of_salv_functions
+        ).
+
+      CATCH cx_salv_existing.   " ALV: Allg. Fehlerklasse (wird bei Syntaxprüfung geprüft)
+      CATCH cx_salv_wrong_call. " ALV: Allg. Fehlerklasse (wird bei Syntaxprüfung geprüft)
+    ENDTRY.
