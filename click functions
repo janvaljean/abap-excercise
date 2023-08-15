@@ -1,0 +1,138 @@
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+CLASS gcl_salv_event_handler DEFINITION.
+  PUBLIC SECTION.
+
+* Doppelklick
+    CLASS-METHODS: on_double_click FOR EVENT double_click OF cl_salv_events_table
+      IMPORTING
+        row
+        column
+        sender.
+* Link-Klick
+    CLASS-METHODS: on_link_click FOR EVENT link_click OF cl_salv_events_table
+      IMPORTING
+        row
+        column
+        sender.
+
+    CLASS-METHODS: on_added_fuction FOR EVENT added_function OF cl_salv_events_table
+      IMPORTING
+        e_salv_function
+        sender.
+
+ENDCLASS.
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+CLASS gcl_salv_event_handler IMPLEMENTATION.
+
+  METHOD on_double_click.
+
+    CHECK row > 0.
+
+    gs_angstellter = gt_angstellter[ row ].    📍get clicked row
+
+    DATA lt_dynpfields TYPE TABLE OF dynpread.  📍 for update. clicked  row fill input fields
+
+    lt_dynpfields = VALUE #(
+                             ( fieldname = 'GS_ANGSTELLTER-ID' fieldvalue = gs_angstellter-id )
+                             ( fieldname = 'GS_ANGSTELLTER-NAME' fieldvalue = gs_angstellter-name )
+                             ( fieldname = 'GS_ANGSTELLTER-ARBEITSPOSITION' fieldvalue = gs_angstellter-arbeitsposition )
+                             ( fieldname = 'GS_ANGSTELLTER-MONATSGEHALT' fieldvalue = |{ gs_angstellter-monatsgehalt NUMBER = ENVIRONMENT }| )
+                             ( fieldname = 'GS_ANGSTELLTER-GEB_DAT' fieldvalue = |{ gs_angstellter-geb_dat DATE = ENVIRONMENT }| )
+                            ).
+
+    CALL FUNCTION 'DYNP_UPDATE_FIELDS'
+      EXPORTING
+        dyname               = sy-repid
+        dynumb               = sy-dynnr
+*       REQUEST              = ' '
+*       START_SEARCH_IN_CURRENT_SCREEN       = ' '
+*       START_SEARCH_IN_MAIN_SCREEN          = ' '
+*       START_SEARCH_IN_STACKED_SCREEN       = ' '
+*       START_SEARCH_ON_SCR_STACKPOS         = ' '
+*       SEARCH_OWN_SUBSCREENS_FIRST          = ' '
+*       SEARCHPATH_OF_SUBSCREEN_AREAS        = ' '
+      TABLES
+        dynpfields           = lt_dynpfields
+      EXCEPTIONS
+        invalid_abapworkarea = 1
+        invalid_dynprofield  = 2
+        invalid_dynproname   = 3
+        invalid_dynpronummer = 4
+        invalid_request      = 5
+        no_fielddescription  = 6
+        undefind_error       = 7
+        OTHERS               = 8.
+    IF sy-subrc <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+
+  ENDMETHOD.
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+  METHOD on_link_click.
+
+    CHECK row > 0.
+
+    gs_angstellter = gt_angstellter[ row ].
+
+    CALL SCREEN 0200.
+
+  ENDMETHOD.
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+save the itab in to db.
+📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 📒 📕 📗 📘 📙 
+  METHOD on_added_fuction.
+
+    CASE e_salv_function.  📍📍📍 custom id 
+      WHEN 'SAVE'.
+        IF lines( gt_angstellter ) = 0.
+          MESSAGE 'personel eklemediniz!' TYPE 'I' DISPLAY LIKE 'E'.
+          RETURN.
+        ENDIF.
+
+        LOOP AT gt_angstellter ASSIGNING FIELD-SYMBOL(<ls_angsteller>).
+          CALL FUNCTION 'NUMBER_GET_NEXT'
+            EXPORTING
+              nr_range_nr             = '01'
+              object                  = 'ZSF_PERS_1'
+*             QUANTITY                = '1'
+*             SUBOBJECT               = ' '
+*             TOYEAR                  = '0000'
+*             IGNORE_BUFFER           = ' '
+            IMPORTING
+              number                  = <ls_angsteller>-id
+*             QUANTITY                =
+*             RETURNCODE              =
+            EXCEPTIONS
+              interval_not_found      = 1
+              number_range_not_intern = 2
+              object_not_found        = 3
+              quantity_is_0           = 4
+              quantity_is_not_1       = 5
+              interval_overflow       = 6
+              buffer_overflow         = 7
+              OTHERS                  = 8.
+          IF sy-subrc <> 0.
+* Implement suitable error handling here
+          ENDIF.
+        ENDLOOP.
+
+        MODIFY zsf_angest_list FROM TABLE gt_angstellter.
+        COMMIT WORK AND WAIT.
+
+        IF sy-subrc = 0.
+          MESSAGE 'Erfolgreich' TYPE 'I'.
+          go_salv->get_columns( )->set_optimize( ).
+          go_salv->refresh( ).
+        ENDIF.
+
+      WHEN OTHERS.
+    ENDCASE.
+
+  ENDMETHOD.
+
+ENDCLASS.
