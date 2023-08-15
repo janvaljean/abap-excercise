@@ -1,0 +1,10 @@
+selection-screen begin of block b1 with frame title text-001.
+  selection-options: s_blnr for bkpf-belnr. "no extentions no intervals
+  parameters: p_bukrs  type bkpf-bukrs.
+selection-screen end of block b1.
+
+
+selection-screen begin of block b2 with frame title text-002.
+parameters: p_rad1 radiobutton group g1  user command test  default 'x'.
+parameters: p_rad2 radiobutton group g1.
+selection-screen  end of block b2.
