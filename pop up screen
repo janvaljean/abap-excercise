@@ -1,0 +1,30 @@
+call function popup_to_display_text.
+
+
+
+#########################
+data: lt_emp type standart table of zemp_data,
+      ls_emp type zemp_data.
+
+
+
+  selection-screen  beginof block b1.
+parameters: p_empid type char 10.
+  selection-screen end of block b1.
+
+  call screen 100.
+--screen create normal screen
+---box
+--text field , data get from pro.
+-button show details - fccode show.
+--in screen screen 200 create---as modal box.
+--box
+---get data from pro from ls_emp.--output only.
+--activate
+--pbo pai 200 create
+--set pf-status 200--cancel back enter func key  event<<
+--user commd when case enter amd cancel  
+--show button
+--select  * from zemp_data into ls_emp where emp_id = p_empid.
+  --call secreen 200 starting  at 10 08 ending at 70 15.
+
