@@ -1,0 +1,2 @@
+DATA(number) = 1.
+    cl_demo_input=>request( CHANGING field = number ).
