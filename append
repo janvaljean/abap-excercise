@@ -1,1 +1,15 @@
 append value #( colname = 'sefa' ...) to itab.
+
+++++++++++++++++
+
+  append |{ phrase } of beer on the wall, { to_lower( phrase ) } of beer.| to result.//result is table
++++++++++++++++++++++
+
+phrase  = COND #( WHEN current > 1 THEN |{ current } bottles| WHEN current = 1 THEN |1 bottle| ELSE |No more bottles| ).
+      append |{ action }, { to_lower( phrase ) } of beer on the wall.| to result.
+
++++++++++++++++++ 
+
+INSERT |{ bottles( count = initial_bottles_count prefix = 'N' ) },|
+      && | { bottles( count = initial_bottles_count wall = 'N' ) }.|
+      INTO TABLE result.
