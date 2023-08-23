@@ -1,0 +1,155 @@
+*&---------------------------------------------------------------------*
+*& Report ZSF_CLASS_DEMO_002
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_class_demo_002_inherit.
+
+PARAMETERS: p_num1 TYPE i,
+            p_num2 TYPE i.
+
+CLASS lcl_art DEFINITION.
+
+  PUBLIC SECTION.
+
+    CLASS-DATA: data1 TYPE i VALUE 1000.
+
+    CLASS-METHODS: add IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: sub IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: mult IMPORTING im_num1   TYPE i
+                                  im_num2   TYPE i
+                        EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: div IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+
+
+ENDCLASS.
+CLASS lcl_art IMPLEMENTATION.
+  METHOD add.
+    ex_result = im_num1 + im_num2 + data1.
+    cl_demo_output=>display( ex_result ).
+  ENDMETHOD.
+
+  METHOD sub.
+    ex_result = im_num1 - im_num2.
+    cl_demo_output=>display( ex_result ).
+  ENDMETHOD.
+
+  METHOD mult.
+    ex_result = im_num1 * im_num2.
+    cl_demo_output=>display( ex_result ).
+  ENDMETHOD.
+
+  METHOD div.
+    ex_result = im_num1 / im_num2.
+    cl_demo_output=>display( ex_result ).
+  ENDMETHOD.
+ENDCLASS.
+
+
+*2 inheritance the parent class components into child class
+
+CLASS lcl_art_child DEFINITION INHERITING FROM lcl_art.
+
+  PUBLIC SECTION.
+    CLASS-DATA: att3 TYPE i,
+                att4 TYPE i.
+
+    CLASS-METHODS: determine_odd
+      EXPORTING ex_odd TYPE char20,
+
+
+      det_parent_add_event
+        EXPORTING ex_even TYPE char20.
+
+ENDCLASS.
+
+CLASS lcl_art_child IMPLEMENTATION.
+
+  METHOD det_parent_add_event.
+    add(
+      EXPORTING
+        im_num1   = p_num1
+        im_num2   = p_num2
+      IMPORTING
+        ex_result = att3
+    ).
+
+    DATA(lv_rem) = att3 MOD 2.
+    CASE lv_rem .
+      WHEN 0.
+        ex_even = 'odd number' .
+      WHEN 1 .
+        ex_even = 'even number'.
+
+    ENDCASE.
+    cl_demo_output=>display( ex_even ).
+  ENDMETHOD.
+
+  METHOD determine_odd.
+
+    sub(
+      EXPORTING
+        im_num1   = p_num1
+        im_num2   = p_num2
+      IMPORTING
+        ex_result = att4
+    ).
+    DATA(lv_rem) = att4 MOD 2.
+    CASE lv_rem.
+      WHEN 0.
+        ex_odd = 'odd number'.
+      WHEN 1.
+
+        ex_odd = 'even number'.
+    ENDCASE.
+    cl_demo_output=>display( ex_odd ).
+  ENDMETHOD.
+
+
+
+
+ENDCLASS.
+
+
+
+
+
+START-OF-SELECTION.
+  lcl_art=>data1 = 200.
+
+*  CALL METHOD lcl_art=>add(
+*    EXPORTING
+*      im_num1 = p_num1
+*      im_num2 = p_num2
+*  ).
+
+*  CALL METHOD lcl_art=>sub
+*    EXPORTING
+*      im_num1 = p_num1
+*      im_num2 = p_num2
+*  IMPORTING
+*     ex_result =
+  .
+
+  CALL METHOD lcl_art_child=>det_parent_add_event
+*    IMPORTING
+*      ex_even =
+    .
+  CALL METHOD lcl_art_child=>determine_odd.
+  CALL METHOD lcl_art_child=>add
+    EXPORTING
+      im_num1   = 5
+      im_num2   = 6
+*    IMPORTING
+*      ex_result =
+    .
