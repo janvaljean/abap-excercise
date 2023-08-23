@@ -1,0 +1,67 @@
+PARAMETERS: p_num1 TYPE i,
+            p_num2 TYPE i.
+
+CLASS lcl_art DEFINITION.
+  
+  PUBLIC SECTION.
+  
+    CLASS-DATA: data1 TYPE i VALUE 1000.
+
+    CLASS-METHODS: add IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: sub IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: mult IMPORTING im_num1   TYPE i
+                                  im_num2   TYPE i
+                        EXPORTING ex_result TYPE i.
+
+    CLASS-METHODS: div IMPORTING im_num1   TYPE i
+                                 im_num2   TYPE i
+                       EXPORTING ex_result TYPE i.
+
+
+
+ENDCLASS.
+CLASS lcl_art IMPLEMENTATION.
+  METHOD add.
+    ex_result = im_num1 + im_num2 + data1.
+    cl_demo_output=>display( ex_result ).
+    ENDMETHOD.
+
+      METHOD sub.
+    ex_result = im_num1 - im_num2.
+     cl_demo_output=>display( ex_result ).
+    ENDMETHOD.
+
+      METHOD mult.
+    ex_result = im_num1 * im_num2.
+     cl_demo_output=>display( ex_result ).
+    ENDMETHOD.
+
+      METHOD div.
+    ex_result = im_num1 / im_num2.
+     cl_demo_output=>display( ex_result ).
+    ENDMETHOD.
+ENDCLASS.
+
+
+START-OF-SELECTION.
+ lcl_art=>data1 = 200.
+
+CALL METHOD lcl_art=>add(
+  EXPORTING
+    im_num1   = p_num1
+    im_num2   = p_num2
+).
+
+call METHOD lcl_art=>sub
+  EXPORTING
+    im_num1   = p_num1
+    im_num2   = p_num2
+*  IMPORTING
+*    ex_result =
+  .
