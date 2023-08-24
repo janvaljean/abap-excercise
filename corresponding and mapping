@@ -27,3 +27,47 @@ itab2 = corresponding #( itab1 mapping c5 = c1 c7 = c2 ).
 itab2 = corresponding #( itab1 mapping c5 = c1 c7 = c2 EXCEPT c1 ).
 
 cl_demo_output=>display( itab2 ).
+
+
+############################
+
+TYPES: BEGIN OF ty_employee,
+  emp_id TYPE num10,
+  fname TYPE char10,
+  lname TYPE char10,
+  END OF ty_employee.
+  
+  DATA: lt_employee TYPE STANDARD TABLE OF ty_employee,
+        ls_employee TYPE ty_employee.
+  
+  select * FROM zemp_data
+    into TABLE @data(lt_emp_data)
+    UP TO 15 ROWS.
+    IF sy-subrc is INITIAL.
+      sort lt_emp_data by emp_id.
+
+    ENDIF.
+    
+    
+    
+*    using loop
+    
+    LOOP AT lt_emp_data INTO DATA(ls_emp_data) .
+      ls_employee-emp_id = ls_emp_data-emp_id.
+      ls_employee-fname = ls_emp_data-fname.
+      ls_employee-lname = ls_emp_data-lname.
+      APPEND ls_employee to lt_employee.
+      clear ls_employee.
+    ENDLOOP.
+    
+    
+*    using mapping.
+    
+    lt_employee[] = CORRESPONDING #( lt_emp_data[] MAPPING emp_id = emp_id
+                                                            fname = fname
+                                                            lname = lname ).
+    IF lt_employee is NOT INITIAL.
+      write 'data copied'
+    ENDIF.
+
+###########################
