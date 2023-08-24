@@ -113,3 +113,8 @@ when ( year mod 4 = 0 ) then abap_true
                                         ELSE |{ result }{ count }{ lv_single1 }| ).
 ###########################################################################################
 
+results = VALUE #( BASE results
+     ( operand = 'NP'
+       result     = COND #( WHEN f1 NP f2 THEN abap_true )
+       fdpos      = sy-fdpos ) ).
+
