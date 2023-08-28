@@ -1,0 +1,72 @@
+class ZSF_CLASS_CONSTRUCTOR_TEST02 definition
+  public
+  final
+  create public .
+
+public section.
+
+  class-methods CLASS_CONSTRUCTOR .
+  methods CONSTRUCTOR
+    importing
+      !IM_PLANT type WERKS_D .
+  methods GET_STRLOC_DETAILS .
+protected section.
+private section.
+
+  types:
+    BEGIN OF typ_strloc,
+           plant TYPE werks_d,
+           stloc TYPE lgort_d,
+         END OF typ_strloc .
+  types:
+    tt_strloc TYPE TABLE OF typ_strloc .
+
+  class-data IT_STRLOC_DETAILS type TT_STRLOC .
+ENDCLASS.
+
+
+
+CLASS ZSF_CLASS_CONSTRUCTOR_TEST02 IMPLEMENTATION.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Static Public Method ZSF_CLASS_CONSTRUCTOR_TEST02=>CLASS_CONSTRUCTOR
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  method CLASS_CONSTRUCTOR.
+
+ SELECT FROM t001l
+      FIELDS werks, lgort
+          INTO TABLE @it_strloc_details.
+
+  endmethod.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZSF_CLASS_CONSTRUCTOR_TEST02->CONSTRUCTOR
+* +-------------------------------------------------------------------------------------------------+
+* | [--->] IM_PLANT                       TYPE        WERKS_D
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD constructor.
+    IF it_strloc_details is INITIAL.
+ SELECT FROM t001l
+      FIELDS werks, lgort
+        WHERE werks = @im_plant
+          INTO TABLE @it_strloc_details.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+* <SIGNATURE>---------------------------------------------------------------------------------------+
+* | Instance Public Method ZSF_CLASS_CONSTRUCTOR_TEST02->GET_STRLOC_DETAILS
+* +-------------------------------------------------------------------------------------------------+
+* +--------------------------------------------------------------------------------------</SIGNATURE>
+  METHOD get_strloc_details.
+
+    LOOP AT it_strloc_details INTO DATA(wa_strloc_details).
+      WRITE: wa_strloc_details-plant, wa_strloc_details-stloc.
+
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
