@@ -1,0 +1,71 @@
+*&---------------------------------------------------------------------*
+*& Report ZSF_CLASS_TEST_004
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_class_test_004.
+
+CLASS class_3 DEFINITION.
+
+  PUBLIC SECTION.
+    METHODS get_material IMPORTING VALUE(im_mtype)   TYPE mtart
+                                   im_plant          TYPE werks_d OPTIONAL
+                         EXPORTING VALUE(ex_ntgew)   TYPE ntgew
+                                   ex_brgew          TYPE brgew
+                         CHANGING  VALUE(ch_ntgew)   TYPE ntgew
+                         RETURNING VALUE(rt_success) TYPE char10.
+
+    METHODS: get_customer_name IMPORTING VALUE(im_cust) TYPE kunnr
+                               RETURNING VALUE(rt_name) TYPE name1.
+
+
+ENDCLASS.
+
+CLASS class_3 IMPLEMENTATION.
+  METHOD get_material.
+
+    SELECT SINGLE ntgew, brgew FROM mara INTO ( @ex_ntgew, @ex_brgew ) WHERE mtart = @im_mtype.
+    ch_ntgew = ch_ntgew + 100.
+    rt_success = abap_true.
+
+  ENDMETHOD.
+
+  METHOD get_customer_name.
+    SELECT SINGLE name1 FROM kna1 INTO @rt_name WHERE kunnr = @im_cust.
+  ENDMETHOD.
+ENDCLASS.
+
+*DATA obj TYPE REF TO class_3.
+*CREATE OBJECT obj.
+DATA:lt_ntgew_2 TYPE ntgew.
+
+START-OF-SELECTION.
+  DATA(obj) = NEW class_3( ).
+
+*  obj->get_material(
+*    EXPORTING
+*      im_mtype = 'FERT'
+**    im_plant =
+*    IMPORTING
+*      ex_ntgew = DATA(lv_ntgew)
+*      ex_brgew = DATA(lv_brgew)
+*  ).
+
+  obj->get_material(
+    EXPORTING
+      im_mtype   = 'FERT'
+*      im_plant   =
+    IMPORTING
+      ex_ntgew   = DATA(lv_ntgew)
+      ex_brgew   = DATA(lv_brgew)
+    CHANGING
+      ch_ntgew   = lt_ntgew_2
+    RECEIVING
+      rt_success = DATA(lkv_success)
+  ).
+
+
+DATA(lv_cust_name) = obj->get_customer_name( im_cust = '0000000001' ).
+
+
+ WRITE: lv_ntgew, lv_brgew, lt_ntgew_2, lkv_success, lv_cust_name.
