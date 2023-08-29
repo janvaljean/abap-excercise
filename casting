@@ -1,0 +1,27 @@
+
+DATA(obj_super) = NEW zsf_superclass_test( ).
+DATA(obj_sub) = NEW zsf_subclass__test( ).
+data(obj_super2) = NEW zsf_superclass_test( ).
+data(obj_super3) = NEW zsf_superclass_test( ).
+
+obj_super->po_details( ).
+obj_sub->po_details( ).
+
+
+*narrow casting
+TRY .
+    obj_super = obj_sub.
+    obj_super->po_details( ).
+
+  CATCH cx_sy_move_cast_error.
+    WRITE: / 'issue with narrow casting'.
+
+ENDTRY.
+
+TRY .
+obj_super ?= obj_super2.
+obj_super->po_details( ).
+CATCH cx_sy_move_cast_error.
+    WRITE: / 'issue with wide  casting'.
+
+ENDTRY.
