@@ -1,3 +1,63 @@
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<ls_itab>).
     <ls_itab> = <ls_itab> + 1.
   ENDLOOP.
+
+####################
+PARAMETERS: p_fname TYPE char10.
+
+FIELD-SYMBOLS <fs>.
+
+DATA: a       TYPE char10 VALUE 'check',
+      wa_mara TYPE vbak,
+      it_mara TYPE TABLE OF mara.
+
+ASSIGN a TO <fs>.
+
+SELECT SINGLE * FROM vbak INTO wa_mara.
+
+ASSIGN wa_mara TO <fs>.
+
+SELECT * FROM mara INTO TABLE it_mara.
+
+ASSIGN it_mara TO <fs>.
+
+LOOP AT it_mara ASSIGNING FIELD-SYMBOL(<fs_mara>).
+
+  ASSIGN COMPONENT p_fname OF STRUCTURE <fs_mara> TO FIELD-SYMBOL(<fs_value>).
+  IF <fs_value> IS ASSIGNED.
+    WRITE <fs_value>.
+  ENDIF.
+*  <fs_mara>-matnr = 'X'.
+*  <fs_mara>-ntgew = '100'.
+  CLEAR <fs_mara>-matnr.
+ENDLOOP.
+
+DELETE it_mara WHERE matnr = 'X'.
+FIELD-SYMBOLS <fs_it_mara> TYPE ANY TABLE.
+ASSIGN it_mara TO <fs_it_mara>.
+SELECT * FROM mara INTO TABLE <fs_it_mara>.
+
+
+DATA dref_wa TYPE REF TO data.
+CREATE DATA dref_wa TYPE vbak.
+ASSIGN dref_wa->* TO FIELD-SYMBOL(<fs_vbak>).
+
+
+DATA dref_it TYPE REF TO data.
+CREATE DATA dref_it TYPE TABLE OF ekko.
+FIELD-SYMBOLS <fs_ekko> TYPE ANY TABLE.
+ASSIGN dref_it->* TO <fs_ekko>.
+
+SELECT SINGLE * FROM vbak INTO <fs_vbak>.
+
+SELECT * FROM ekko INTO TABLE <fs_ekko>.
+
+
+PARAMETERS: p_table TYPE char10.
+
+data dref_table TYPE REF TO data.
+CREATE DATA dref_table TYPE TABLE OF (p_table).
+FIELD-SYMBOLS <fs_table> TYPE ANY TABLE.
+ASSIGN dref_table->* to <fs_table>.
+
+SELECT * from (p_table) INTO TABLE <fs_table>.
