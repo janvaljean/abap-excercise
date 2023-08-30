@@ -1,0 +1,24 @@
+
+*data(obj) = new zsf_class_events_001( ).
+
+*set HANDLER obj->evt_public for ALL INSTANCES.
+
+*obj->raise_event( ).
+
+data(obj) = new zsf_class_events_002( ).
+
+set HANDLER obj->ins_method_ins_event for ALL INSTANCES.
+set HANDLER obj->ins_method_sta_event." for ALL INSTANCES.
+set HANDLER obj->sta_method_ins_event for ALL INSTANCES.
+set HANDLER zsf_class_events_002=>sta_method_sta_event ." no for ALL INSTANCES. static event without for.
+
+obj->raise_event( ).
+
+
+RAISE_EVENT	Instance Method	Public
+INS_METHOD_INS_EVENT	Instance Method	Public
+INS_METHOD_STA_EVENT	Instance Method	Public
+STA_METHOD_STA_EVENT	Static Method	Public
+STA_METHOD_INS_EVENT	Static Method	Public
+INS_EVENT	Instance Event	Public
+STA_EVENT	Static Event	Public
