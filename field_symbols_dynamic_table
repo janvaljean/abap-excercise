@@ -1,0 +1,8 @@
+PARAMETERS: p_table TYPE char10.
+
+data dref_table TYPE REF TO data.
+CREATE DATA dref_table TYPE TABLE OF (p_table).
+FIELD-SYMBOLS <fs_table> TYPE ANY TABLE.
+ASSIGN dref_table->* to <fs_table>.
+
+SELECT * from (p_table) INTO TABLE <fs_table>.
