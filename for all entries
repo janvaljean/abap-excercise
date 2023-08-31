@@ -1,0 +1,41 @@
+
+SELECT FROM vbak
+  FIELDS vbeln, vbtyp, bnddt
+*  WHERE vbeln = '234234'
+  INTO TABLE @DATA(it_sheader).
+
+IF it_sheader IS NOT INITIAL OR sy-subrc EQ 0.
+  SELECT FROM vbap
+    FIELDS vbeln, posnr, matnr
+    FOR ALL ENTRIES IN @it_sheader
+    WHERE vbeln = @it_sheader-vbeln
+    INTO TABLE @DATA(it_sitems).
+ENDIF.
+
+IF it_sitems IS NOT INITIAL OR sy-subrc EQ 0 .
+
+*  delete ADJACENT DUPLICATES FROM it_sitems COMPARING matnr.
+
+  SELECT matnr,mtart,ntgew FROM mara
+    INTO TABLE @DATA(it_materials)
+    FOR ALL ENTRIES IN @it_sitems
+    WHERE matnr = @it_sitems-matnr.
+ENDIF.
+
+BREAK-POINT.
+
+
+SELECT FROM mkpf
+  FIELDS mblnr, mjahr
+  WHERE mblnr = '5000000230'
+  INTO TABLE @DATA(it_mkpf).
+
+IF sy-subrc EQ 0.
+  SELECT FROM mseg
+    FIELDS mblnr, mjahr, zeile
+    FOR ALL ENTRIES IN @it_mkpf
+    WHERE mblnr = @it_mkpf-mblnr
+    AND mjahr = @it_mkpf-mjahr
+      INTO TABLE @DATA(it_mseg).
+
+ENDIF.
