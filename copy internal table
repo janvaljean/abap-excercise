@@ -1,0 +1,4 @@
+data(it_mseg_copy) = it_mseg.
+
+DATA: it_mseg_copy2 like it_mseg.
+it_mseg_copy2 = it_mseg
