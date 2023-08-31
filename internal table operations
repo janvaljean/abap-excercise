@@ -1,0 +1,57 @@
+*TYPES: BEGIN OF stu_orders,
+*         aufnr      TYPE aufnr,
+*         auart      TYPE auart,
+*         autyp      TYPE auftyp,
+*         call_field TYPE char20,
+*       END OF stu_orders.
+*
+*DATA: wa_orders TYPE stu_orders,
+*      it_orders TYPE TABLE OF stu_orders." WITH HEADER LINE.
+*
+*
+*DATA: wa_mara TYPE mara,
+*      it_mara   TYPE TABLE OF mara.
+
+*BREAK-POINT.
+
+*APPEND wa to itab.
+*insert wa into itab."index 5.
+*MODIFY itab from wa.
+*delete itab index sy-tabix.
+*DELETE itab where ...
+
+
+SELECT FROM mard
+  FIELDS matnr, werks, lgort, labst
+*  where
+  INTO TABLE @DATA(it_material).
+
+*LOOP AT it_material INTO DATA(wa_material) .
+*  wa_material-labst = 20.
+*  MODIFY it_material FROM wa_material.
+*  wa_material-labst = 555.
+*  MODIFY it_material FROM wa_material INDEX 10.
+*
+*ENDLOOP.
+**LOOP AT it_material ASSIGNING FIELD-SYMBOL(<fs_wa>) .
+**  IF <fs_wa>-lgort = 'TM01'.
+**    <fs_wa>-labst = 100.
+** 
+**  ENDIF.
+**ENDLOOP.
+*
+*wa_material-labst = 666.
+*wa_material-lgort = 'AAAA'.
+*wa_material-werks = '1000'.
+*APPEND wa_material TO it_material.
+*INSERT wa_material INTO it_material INDEX 1.
+*DELETE it_material INDEX 1.
+*delete it_material where werks = 'YZ01'.
+*BREAK-POINT.
+
+data(it_material2) = it_material.
+
+LOOP AT it_material2 into DATA(wa_mat_2).
+  at FIRST.
+
+ENDLOOP.
