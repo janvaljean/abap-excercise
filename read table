@@ -1,0 +1,52 @@
+reading itabs line that name is sefa. 
+data(wa_read) = value #(itab[ name = 'sefa' ]).
+
+when name = esra is not found, with optional keyword damp prevented. 
+data(wa_read)= value #( itab [ name = 'esra' ] optional ). 
+
+when esra not found , you can set default value
+data(wa_default) = value #( name = 'aaa' role = 'b').
+data(wa_read) = value #( itab[ name = 'jack' ]  default wa_default ).
+
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
+
+DATA: lt_sflight_temp TYPE TABLE OF sflight.
+DATA: lt_sflight TYPE TABLE OF sflight.
+
+DATA: lv_begin TYPE timestampl.
+DATA: lv_end TYPE timestampl.
+DATA: lv_fark TYPE timestampl.
+DATA: lv_fark_binary TYPE timestampl.
+
+SELECT * FROM sflight INTO TABLE lt_sflight_temp.
+
+
+
+READ TABLE lt_sflight_temp INTO DATA(ls_wa) WITH KEY paymentsum = '12861.78'.
+
+DO 100000 TIMES.
+  APPEND LINES OF lt_sflight_temp TO lt_sflight.
+ENDDO.
+
+DELETE lt_sflight WHERE paymentsum = '12861.78'.
+
+APPEND ls_wa TO lt_sflight.
+
+transporting no fields.
+GET RUN TIME  FIELD lv_begin.
+READ TABLE lt_sflight INTO ls_wa WITH KEY paymentsum = '12861.78'.
+GET RUN TIME  FIELD lv_end.
+lv_fark = lv_end - lv_begin.
+
+SORT lt_sflight BY paymentsum.
+
+GET RUN TIME  FIELD lv_begin.
+READ TABLE lt_sflight INTO DATA(ls_wa_binary) WITH KEY paymentsum = '12861.78' BINARY SEARCH.
+GET RUN TIME  FIELD lv_end.
+lv_fark_binary = lv_end - lv_begin.
+
+
+
+WRITE  |Normal read: { lv_fark }| .
+WRITE / |BINARY SEARCH: { lv_fark_binary }| .
+
