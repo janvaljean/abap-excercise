@@ -1,0 +1,37 @@
+
+PARAMETERS: p_sname TYPE char30.
+PARAMETERS: p_fdname TYPE char30.
+DATA(itab) = VALUE stringtab( ).
+
+DATA: dref_var TYPE REF TO data,
+      dref_wa  TYPE REF TO data,
+      dref_it  TYPE REF TO data.
+
+
+CREATE DATA: dref_var TYPE i,
+             dref_wa  TYPE (p_sname),
+             dref_it  TYPE TABLE OF (p_sname).
+
+ASSIGN dref_var->* TO FIELD-SYMBOL(<fs_var>).
+<fs_var> = 10.
+
+ASSIGN dref_wa->* TO FIELD-SYMBOL(<fs_wa>).
+SELECT SINGLE * FROM (p_sname) INTO <fs_wa>.
+
+SELECT * FROM dd03l INTO  TABLE @data(it_fields) WHERE tabname = @p_sname.
+
+LOOP AT it_fields ASSIGNING FIELD-SYMBOL(<fs_fields>).
+
+ASSIGN COMPONENT <fs_fields>-fieldname OF STRUCTURE <fs_wa> to FIELD-SYMBOL(<fs_value>).
+append <fs_value> to itab.
+ENDLOOP.
+
+
+
+FIELD-SYMBOLS <fs_it> TYPE STANDARD TABLE.
+ASSIGN dref_it->* TO <fs_it>.
+SELECT * FROM (p_sname) INTO TABLE <fs_it> UP TO 100 ROWS.
+
+ASSIGN COMPONENT p_fdname of STRUCTURE <fs_wa> to <fs_var>.
+
+BREAK-POINT.
