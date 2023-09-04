@@ -50,3 +50,5 @@ lv_fark_binary = lv_end - lv_begin.
 WRITE  |Normal read: { lv_fark }| .
 WRITE / |BINARY SEARCH: { lv_fark_binary }| .
 
+
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
