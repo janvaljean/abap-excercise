@@ -1,0 +1,94 @@
+REPORT zsf_alv_test_001.
+
+DATA: it_mara        TYPE TABLE OF mara,
+      it_alv_design  TYPE slis_t_fieldcat_alv,
+      ls_layout      TYPE slis_layout_alv,
+      it_sort_fields TYPE slis_t_sortinfo_alv.
+
+DATA: wa_alv_design  TYPE slis_fieldcat_alv,
+      wa_sort_fields TYPE slis_sortinfo_alv.
+
+
+START-OF-SELECTION.
+
+  SELECT * FROM mara INTO TABLE it_mara.
+
+  CLEAR it_alv_design.
+
+  wa_alv_design-row_pos = 1.
+  wa_alv_design-col_pos = 1.
+  wa_alv_design-fieldname = 'MATNR'.
+  wa_alv_design-tabname = 'IT_MARA'.
+  wa_alv_design-outputlen = '20'.
+  wa_alv_design-seltext_m = 'MATERIAL NUMBER'.
+
+
+
+  APPEND wa_alv_design TO it_alv_design.
+  CLEAR wa_alv_design.
+
+  wa_alv_design-row_pos = 1.
+  wa_alv_design-col_pos = 2.
+  wa_alv_design-fieldname = 'MTART'.
+  wa_alv_design-tabname = 'IT_MARA'.
+  wa_alv_design-outputlen = '8'.
+  wa_alv_design-seltext_m = 'MATERIAL TYPE'.
+
+
+
+  APPEND wa_alv_design TO it_alv_design.
+  CLEAR wa_alv_design.
+
+  wa_alv_design-row_pos = 1.
+  wa_alv_design-col_pos = 3.
+  wa_alv_design-fieldname = 'ERSDA'.
+  wa_alv_design-tabname = 'IT_MARA'.
+  wa_alv_design-outputlen = '10'.
+  wa_alv_design-seltext_m = 'Created on'.
+
+
+
+  APPEND wa_alv_design TO it_alv_design.
+  CLEAR wa_alv_design.
+
+  wa_alv_design-row_pos = 1.
+  wa_alv_design-col_pos = 4.
+  wa_alv_design-fieldname = 'NTGEW'.
+  wa_alv_design-tabname = 'IT_MARA'.
+  wa_alv_design-outputlen = '10'.
+  wa_alv_design-seltext_m = 'Created on'.
+*wa_alv_design-checkbox = 'X'.
+
+
+  APPEND wa_alv_design TO it_alv_design.
+  CLEAR wa_alv_design.
+
+***********LAYOUT*************
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-edit = 'X'.
+
+***********Sort**********
+
+  wa_sort_fields-fieldname = 'MTART'.
+  wa_sort_fields-up = 'X'.
+
+
+
+  APPEND wa_sort_fields to it_sort_fields.
+  CLEAR wa_sort_fields.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+*     i_structure_name = 'MARA'
+      it_sort       = it_sort_fields
+      is_layout     = ls_layout
+      it_fieldcat   = it_alv_design
+    TABLES
+      t_outtab      = it_mara
+    EXCEPTIONS
+      program_error = 1
+      OTHERS        = 2.
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
