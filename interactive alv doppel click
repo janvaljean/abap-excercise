@@ -1,0 +1,98 @@
+*&---------------------------------------------------------------------*
+*& Report ZSF_INTERACTIVE_ALV_TEST_002
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_interactive_alv_test_002.
+
+TYPES: BEGIN OF stu_purchase,
+         ebeln TYPE ebeln,
+         bukrs TYPE bukrs,
+         bstyp TYPE bstyp,
+         bsart TYPE esart,
+       END OF stu_purchase.
+
+DATA: it_purchase TYPE TABLE OF stu_purchase.
+
+DATA: wa_alv TYPE slis_fieldcat_alv,
+      it_alv TYPE slis_t_fieldcat_alv.
+
+SELECT ebeln bukrs bstyp bsart FROM ekko INTO TABLE it_purchase.
+
+PERFORM build_fieldcat USING '1' '1' 'EBELN' 'Purchase Order' '20'.
+PERFORM build_fieldcat USING '1' '2' 'BUKRS' 'Company Code' '8'.
+PERFORM build_fieldcat USING '1' '3' 'BSTYP' 'Docu. Cat.' '5'.
+PERFORM build_fieldcat USING '1' '4' 'BSART' 'Docu. type' '10'.
+
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program      = sy-repid
+    i_callback_user_command = 'EKPO_DETAILS'
+    it_fieldcat             = it_alv
+  TABLES
+    t_outtab                = it_purchase
+* EXCEPTIONS
+*   PROGRAM_ERROR           = 1
+*   OTHERS                  = 2
+  .
+
+
+
+*&---------------------------------------------------------------------*
+*& Form BUILD_FIELDCAT
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&---------------------------------------------------------------------*
+FORM build_fieldcat  USING    VALUE(p_rowpos)
+                              VALUE(p_colpos)
+                              VALUE(p_fieldname)
+                              VALUE(p_header_text)
+                              VALUE(p_length).
+
+  wa_alv-row_pos = p_rowpos.
+  wa_alv-col_pos = p_colpos.
+  wa_alv-fieldname = p_fieldname.
+  wa_alv-tabname = 'IT_PURCHASE'.
+  wa_alv-seltext_m = p_header_text.
+  wa_alv-outputlen = p_length.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+ENDFORM.
+
+FORM ekpo_details USING
+                     p_ucomm TYPE sy-ucomm
+                     p_selflddetails TYPE slis_selfield.
+
+  DATA:it_ekpo TYPE TABLE OF ekpo.
+
+  READ TABLE it_purchase INTO data(wa_purchase) INDEX p_selflddetails-tabindex.
+
+  SELECT * FROM ekpo INTO TABLE it_ekpo WHERE ebeln = wa_purchase-ebeln.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      i_callback_program = ' '
+*     i_callback_pf_status_set = ' '
+*     i_callback_user_command = ' '
+      i_structure_name   = 'EKPO'
+    TABLES
+      t_outtab           = it_ekpo
+* EXCEPTIONS
+*     PROGRAM_ERROR      = 1
+*     OTHERS             = 2
+    .
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+
+ENDFORM.
