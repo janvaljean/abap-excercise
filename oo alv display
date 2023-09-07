@@ -1,0 +1,35 @@
+CALL SCREEN 200.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0200 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE status_0200 OUTPUT.
+* SET PF-STATUS 'xxxxxxxx'.
+* SET TITLEBAR 'xxx'.
+
+  SELECT * FROM mara INTO TABLE @DATA(it_mara).
+
+**step1 creat a obj
+  DATA(obj_ccont) = NEW cl_gui_custom_container( container_name = 'CUSTCONT'  ).
+
+
+*step2 create a ref for cl_gui_alv_grid
+
+  DATA(obj_alv) = NEW cl_gui_alv_grid( i_parent = obj_ccont  ).
+
+* step3 call method
+
+  obj_alv->set_table_for_first_display(
+
+    EXPORTING
+      i_structure_name              = 'MARA'              " Strukturname der internen Ausgabetabelle
+
+    changing
+      it_outtab                     = it_mara         " Ausgabetabelle
+*     it_fieldcatalog               =                  " Feldkatalog
+*     it_sort                       =                  " Sortierkriterien
+*     it_filter                     =                  " Filterkriterien
+ ).
+
+ENDMODULE.
