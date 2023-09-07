@@ -1,0 +1,121 @@
+TYPES: BEGIN OF stu_purchase,
+         ebeln TYPE ebeln,
+         bukrs TYPE bukrs,
+         bstyp TYPE bstyp,
+         bsart TYPE esart,
+         cbox  TYPE char1,  --checkbox  📌 📌 📌 
+       END OF stu_purchase.
+
+DATA: it_purchase TYPE TABLE OF stu_purchase.
+
+DATA: wa_alv TYPE slis_fieldcat_alv, 📒📒📒  menu 📒
+      it_alv TYPE slis_t_fieldcat_alv.📒📒📒    menu📒
+
+DATA wa_layout TYPE slis_layout_alv.  --checkbox 📌 📌 📌 
+
+DATA: wa_exclude TYPE LINE OF slis_t_extab, 📒📒📒menu📒
+      it_exclude TYPE slis_t_extab.
+
+SELECT ebeln bukrs bstyp bsart FROM ekko INTO TABLE it_purchase.
+
+PERFORM build_fieldcat USING '1' '1' 'EBELN' 'Purchase Order' '20'.
+PERFORM build_fieldcat USING '1' '2' 'BUKRS' 'Company Code' '8'.
+PERFORM build_fieldcat USING '1' '3' 'BSTYP' 'Docu. Cat.' '5'.
+PERFORM build_fieldcat USING '1' '4' 'BSART' 'Docu. type' '10'.
+
+wa_exclude-fcode = '&OUP'. 📒📒📒menu📒
+APPEND wa_exclude TO it_exclude.
+CLEAR wa_exclude.
+
+wa_exclude-fcode = '&ODN'. 📒📒📒menu📒
+APPEND wa_exclude TO it_exclude.
+CLEAR wa_exclude.
+
+wa_layout-box_fieldname = 'CBOX'.📌 📌 📌 
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program       = sy-repid
+    i_callback_user_command  = 'EKPO_DETAILS'
+    i_callback_pf_status_set = 'CUST_MENU' 📒📒📒menu📒se41 menu create custom
+    is_layout = wa_layout  --chekbox 📌 📌 📌 📌 
+    it_excluding             = it_exclude
+    it_fieldcat              = it_alv
+  TABLES
+    t_outtab                 = it_purchase
+* EXCEPTIONS
+*   PROGRAM_ERROR            = 1
+*   OTHERS                   = 2
+  .
+CLEAR it_exclude.
+
+
+*&---------------------------------------------------------------------*
+*& Form BUILD_FIELDCAT
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&---------------------------------------------------------------------*
+FORM build_fieldcat  USING    VALUE(p_rowpos)
+                              VALUE(p_colpos)
+                              VALUE(p_fieldname)
+                              VALUE(p_header_text)
+                              VALUE(p_length).
+
+  wa_alv-row_pos = p_rowpos.
+  wa_alv-col_pos = p_colpos.
+  wa_alv-fieldname = p_fieldname.
+  wa_alv-tabname = 'IT_PURCHASE'.
+  wa_alv-seltext_m = p_header_text.
+  wa_alv-outputlen = p_length.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+ENDFORM.
+
+FORM ekpo_details USING
+                     p_ucomm TYPE sy-ucomm
+                     p_selflddetails TYPE slis_selfield.
+
+  LOOP AT it_purchase ASSIGNING FIELD-SYMBOL(<fs_purchase>) WHERE cbox is NOT INITIAL. 📌 📌 📌 
+    <fs_purchase>-bukrs = 1000.
+
+  ENDLOOP.
+  p_selflddetails-refresh = 'X'. 📌 📌 📌 
+
+
+*  DATA:it_ekpo TYPE TABLE OF ekpo.    🔸 🔹🔸 🔹🔸 🔹double click
+*
+*  READ TABLE it_purchase INTO DATA(wa_purchase) INDEX p_selflddetails-tabindex.
+*
+*  SELECT * FROM ekpo INTO TABLE it_ekpo WHERE ebeln = wa_purchase-ebeln.
+*
+*  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+*    EXPORTING
+*      i_callback_program = ' '
+**     i_callback_pf_status_set = ' '
+**     i_callback_user_command = ' '
+*      i_structure_name   = 'EKPO'
+*    TABLES
+*      t_outtab           = it_ekpo
+** EXCEPTIONS
+**     PROGRAM_ERROR      = 1
+**     OTHERS             = 2
+*    .
+*  IF sy-subrc <> 0.
+** Implement suitable error handling here
+*  ENDIF.
+
+
+ENDFORM.
+
+FORM cust_menu USING it_fcode TYPE slis_t_extab.  📒📒📒menu📒se41 menu create custom
+  SET PF-STATUS 'CMENU'.
+
+ENDFORM.
