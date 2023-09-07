@@ -1,0 +1,99 @@
+CALL SCREEN 200.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0200 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE status_0200 OUTPUT.
+  SET PF-STATUS 'MENU'.
+* SET TITLEBAR 'xxx'.
+
+  TYPES: BEGIN OF stu_mara,
+           matnr TYPE matnr,
+           mtart TYPE mtart,
+           ntgew TYPE ntgew,
+         END OF stu_mara.
+
+  DATA: it_alv TYPE lvc_t_fcat,
+        wa_alv TYPE LINE OF lvc_t_fcat.
+
+  DATA:it_mara TYPE TABLE OF stu_mara.
+
+  DATA: wa_exclude TYPE LINE OF ui_functions,
+        it_exclude TYPE ui_functions.
+
+  SELECT matnr mtart ntgew FROM mara INTO TABLE it_mara.
+
+*    filll fieldcatalog
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '1'.
+  wa_alv-fieldname = 'MATNR'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '2'.
+  wa_alv-fieldname = 'MTART'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material Type'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '2'.
+  wa_alv-fieldname = 'NTGEW'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Mat Net Weight'.
+  wa_alv-edit = 'X'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+**step1 creat a obj
+  DATA(obj_ccont) = NEW cl_gui_custom_container( container_name = 'CUSTCONT'  ).
+
+
+*step2 create a ref for cl_gui_alv_grid
+
+  DATA(obj_alv) = NEW cl_gui_alv_grid( i_parent = obj_ccont ).
+
+  wa_exclude = cl_gui_alv_grid=>mc_fc_print.
+  APPEND wa_exclude TO it_exclude.
+  wa_exclude = cl_gui_alv_grid=>mc_fc_subtot.
+  APPEND wa_exclude TO it_exclude.
+* step3 call method
+
+  obj_alv->set_table_for_first_display(
+
+    EXPORTING
+*      i_structure_name              = 'MARA'
+it_toolbar_excluding = it_exclude          " Strukturname der internen Ausgabetabelle
+
+    CHANGING
+      it_outtab                     = it_mara         " Ausgabetabelle
+     it_fieldcatalog               =  it_alv                " Feldkatalog
+*     it_sort                       =                  " Sortierkriterien
+*     it_filter                     =                  " Filterkriterien
+ ).
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0200  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0200 INPUT.
+  DATA okcode_200 TYPE sy-ucomm.
+
+  IF okcode_200 = 'EXIT'.
+    LEAVE PROGRAM.
+
+  ENDIF.
+ENDMODULE.
