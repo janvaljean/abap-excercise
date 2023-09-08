@@ -1,0 +1,202 @@
+*&---------------------------------------------------------------------*
+*& Report ZSF_OO_ALV_TEST_002_EVENTS
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_oo_alv_test_002_events.
+
+CLASS lc_alv DEFINITION.
+  PUBLIC SECTION.
+
+    METHODS:evt_doubleclick FOR EVENT double_click OF cl_gui_alv_grid IMPORTING e_row e_column.
+    METHODS:evt_onf4help FOR EVENT onf4 OF cl_gui_alv_grid .
+    METHODS:evt_cust_toolbar FOR EVENT toolbar OF cl_gui_alv_grid  IMPORTING e_object.
+    METHODS:evt_zcommand FOR EVENT user_command OF cl_gui_alv_grid  IMPORTING e_ucomm.
+
+ENDCLASS.
+
+CLASS lc_alv IMPLEMENTATION.
+  METHOD evt_doubleclick.
+
+
+
+  ENDMETHOD.
+
+  METHOD evt_onf4help.
+
+
+
+  ENDMETHOD.
+
+  METHOD evt_cust_toolbar.
+
+
+    DATA: wa_cust_buttonns TYPE stb_button.
+
+    wa_cust_buttonns-butn_type = 0.
+    wa_cust_buttonns-function = 'EXIT'.
+    wa_cust_buttonns-text = 'Close'.
+
+    APPEND wa_cust_buttonns TO e_object->mt_toolbar.
+
+
+  ENDMETHOD.
+
+
+  METHOD evt_zcommand.
+
+IF e_ucomm = 'EXIT'.
+BREAK-POINT.
+ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+
+**step1 creat a obj
+  DATA(obj_ccont) = NEW cl_gui_custom_container( container_name = 'CUSTCONT' ).
+
+*step2 create a ref for cl_gui_alv_grid
+
+  DATA(obj_alv) = NEW cl_gui_alv_grid( i_parent = obj_ccont ).
+
+
+
+
+
+  CALL SCREEN 200.
+
+*&---------------------------------------------------------------------*
+*& Module STATUS_0200 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE status_0200 OUTPUT.
+  SET PF-STATUS 'MENU'.
+* SET TITLEBAR 'xxx'.
+
+  TYPES: BEGIN OF stu_mara,
+           matnr TYPE matnr,
+           mtart TYPE mtart,
+           ntgew TYPE ntgew,
+         END OF stu_mara.
+
+  DATA: it_alv TYPE lvc_t_fcat,
+        wa_alv TYPE LINE OF lvc_t_fcat.
+
+  DATA:it_mara TYPE TABLE OF stu_mara.
+
+  DATA: wa_exclude TYPE LINE OF ui_functions,
+        it_exclude TYPE ui_functions.
+
+  SELECT matnr mtart ntgew FROM mara INTO TABLE it_mara UP TO 10 ROWS.
+
+  PERFORM fill_catalog.
+
+
+* step3 call method
+
+*   events double click
+
+  DATA(obj_alv_locclass) = NEW lc_alv( ).
+
+  SET HANDLER obj_alv_locclass->evt_doubleclick FOR obj_alv.
+
+*    search help
+
+
+  DATA: it_f4fields TYPE lvc_t_f4,
+        wa_f4fields TYPE LINE OF lvc_t_f4.
+  wa_f4fields-fieldname = 'MTART'.
+  wa_f4fields-register = 'X'.
+  APPEND wa_f4fields TO it_f4fields.
+  CLEAR wa_f4fields.
+
+*  obj_alv->register_f4_for_fields( it_f4 = it_f4fields ).
+*
+*  SET HANDLER obj_alv_locclass->evt_onf4help FOR obj_alv.
+*toolbar register
+  SET HANDLER obj_alv_locclass->evt_cust_toolbar FOR obj_alv.
+*  syuccomm event
+  SET HANDLER obj_alv_locclass->evt_zcommand FOR obj_alv.
+*  display
+  obj_alv->set_table_for_first_display(
+
+    EXPORTING
+*      i_structure_name              = 'MARA'
+      it_toolbar_excluding = it_exclude          " Strukturname der internen Ausgabetabelle
+
+    CHANGING
+      it_outtab                     = it_mara         " Ausgabetabelle
+     it_fieldcatalog               =  it_alv                " Feldkatalog
+*     it_sort                       =                  " Sortierkriterien
+*     it_filter                     =                  " Filterkriterien
+ ).
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0200  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0200 INPUT.
+  DATA okcode_200 TYPE sy-ucomm.
+
+  IF okcode_200 = 'EXIT'.
+    LEAVE PROGRAM.
+
+  ENDIF.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Form FILL_CATALOG
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM fill_catalog .
+
+*    filll fieldcatalog
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '1'.
+  wa_alv-fieldname = 'MATNR'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '2'.
+  wa_alv-fieldname = 'MTART'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-edit = 'X'.
+  wa_alv-f4availabl = 'X'.
+  wa_alv-ref_field = 'MTART'. 🎸 🪕 🎻
+  wa_alv-ref_table = 'MARA'. 🎸 🪕 🎻
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material Type'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '2'.
+  wa_alv-fieldname = 'NTGEW'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Mat Net Weight'.
+  wa_alv-edit = 'X'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+
+
+  wa_exclude = cl_gui_alv_grid=>mc_fc_print.
+  APPEND wa_exclude TO it_exclude.
+  wa_exclude = cl_gui_alv_grid=>mc_fc_subtot.
+  APPEND wa_exclude TO it_exclude.
+ENDFORM.
