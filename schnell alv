@@ -1,0 +1,9 @@
+  cl_salv_table=>factory(
+
+    IMPORTING
+     r_salv_table   =  data(lr_alv)                        " Basisklasse einfache ALV Tabellen
+    CHANGING
+      t_table        = it_vbak      "itab
+  ).
+  
+  lr_alv->display( ).
