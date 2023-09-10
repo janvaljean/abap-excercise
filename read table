@@ -1,6 +1,6 @@
 reading itabs line that name is sefa. 
-data(wa_read) = value #(itab[ name = 'sefa' ]).
-
+data(wa_read) = value #(itab[ name = 'sefa' ] optional).  --try catch
+data(wa) =  value #(itab[ 4 ] optional ) 4.th index
 when name = esra is not found, with optional keyword damp prevented. 
 data(wa_read)= value #( itab [ name = 'esra' ] optional ). 
 
