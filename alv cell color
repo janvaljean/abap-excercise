@@ -1,0 +1,22 @@
+TYPES: BEGIN OF stu_mara,
+         matnr      TYPE matnr,
+         mtart      TYPE mtart,
+         ntgew      TYPE ntgew,
+         mat_grp    TYPE matkl,
+         cell_color TYPE lvc_t_scol,
+       END OF stu_mara.
+
+DATA:it_mara TYPE TABLE OF stu_mara,
+     wa_mara TYPE stu_mara.
+
+DATA:wa_cellcolor TYPE lvc_s_scol,
+     wa_layout    TYPE lvc_s_layo.
+
+ wa_cellcolor-fname = 'MTART'.
+  wa_cellcolor-color-col = 5.
+
+  APPEND wa_cellcolor TO wa_mara-cell_color.
+  MODIFY it_mara FROM wa_mara INDEX 4 TRANSPORTING cell_color.
+  CLEAR wa_mara-cell_color.
+
+  wa_layout-ctab_fname = 'CELL_COLOR'.
