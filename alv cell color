@@ -13,10 +13,16 @@ DATA:wa_cellcolor TYPE lvc_s_scol,
      wa_layout    TYPE lvc_s_layo.
 
  wa_cellcolor-fname = 'MTART'.
-  wa_cellcolor-color-col = 5.
+  wa_cellcolor-color-col = 5.  "color art
 
   APPEND wa_cellcolor TO wa_mara-cell_color.
-  MODIFY it_mara FROM wa_mara INDEX 4 TRANSPORTING cell_color.
+  MODIFY it_mara FROM wa_mara INDEX 4 TRANSPORTING cell_color. "" index
   CLEAR wa_mara-cell_color.
 
+  wa_cellcolor-fname = 'MATNR'.
+  wa_cellcolor-color-col = 7.
+  APPEND wa_cellcolor TO wa_mara-cell_color.
+  MODIFY it_mara FROM wa_mara INDEX 7 TRANSPORTING cell_color.
   wa_layout-ctab_fname = 'CELL_COLOR'.
+
+wa_layout-ctab_fname = 'CELL_COLOR'.
