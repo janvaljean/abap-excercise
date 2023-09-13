@@ -1,0 +1,582 @@
+*&---------------------------------------------------------------------*
+*& Report ZSF_OO_ALV_TEST_002_EVENTS
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_oo_alv_test_002_events.
+
+
+TYPES: BEGIN OF stu_mara,
+         matnr       TYPE matnr,
+         mtart       TYPE mtart,
+         ntgew       TYPE ntgew,
+         mat_grp     TYPE matkl,
+         cell_color  TYPE lvc_t_scol,
+         cell_styles TYPE lvc_t_styl,
+         status      TYPE char1,
+       END OF stu_mara.
+
+TYPES: BEGIN OF stu_marc,
+         matnr TYPE matnr,
+         werks TYPE werks_d,
+       END OF stu_marc.
+
+TYPES: BEGIN OF stu_mtext,
+         mtart TYPE mtart,
+         mtbez TYPE mtbez,
+       END OF stu_mtext.
+
+DATA it_mtext TYPE TABLE OF stu_mtext.
+DATA it_marc TYPE TABLE OF stu_marc.
+
+DATA: it_alv TYPE lvc_t_fcat,
+      wa_alv TYPE LINE OF lvc_t_fcat.
+
+DATA:it_mara TYPE TABLE OF stu_mara,
+     wa_mara TYPE stu_mara.
+
+DATA: wa_exclude TYPE LINE OF ui_functions,
+      it_exclude TYPE ui_functions.
+
+DATA:wa_cellcolor  TYPE lvc_s_scol,
+     wa_layout     TYPE lvc_s_layo,
+     wa_cellstyles TYPE lvc_s_styl.
+
+
+
+"Screen 200
+DATA: obj_ccont TYPE REF TO cl_gui_custom_container,
+      obj_alv   TYPE REF TO cl_gui_alv_grid.
+
+"Screen 300
+DATA:obj_cont_2 TYPE REF TO cl_gui_custom_container,
+     obj_alv_2  TYPE REF TO cl_gui_alv_grid.
+
+"Screen 400
+DATA:obj_cont_3 TYPE REF TO cl_gui_custom_container,
+     obj_alv_3  TYPE REF TO cl_gui_alv_grid.
+
+CLASS lc_alv DEFINITION.
+  PUBLIC SECTION.
+
+    METHODS:evt_doubleclick FOR EVENT double_click OF cl_gui_alv_grid IMPORTING e_row e_column.
+    METHODS:evt_hotspot FOR EVENT hotspot_click OF cl_gui_alv_grid IMPORTING e_row_id e_column_id.
+    METHODS:evt_onf4help FOR EVENT onf4 OF cl_gui_alv_grid IMPORTING es_row_no .
+    METHODS:evt_cust_toolbar FOR EVENT toolbar OF cl_gui_alv_grid  IMPORTING e_object.
+    METHODS:evt_ucommand FOR EVENT user_command OF cl_gui_alv_grid  IMPORTING e_ucomm.
+
+ENDCLASS.
+
+CLASS lc_alv IMPLEMENTATION.
+*  double click
+  METHOD evt_doubleclick.
+    DATA(lv_matnr) = it_mara[ e_row-index ]-matnr.
+    SELECT  matnr, werks FROM marc  INTO TABLE @it_marc WHERE matnr = '000000000000000041'."@lv_matnr
+    CALL SCREEN 0300.
+
+  ENDMETHOD.
+*  hotspot
+  METHOD evt_hotspot.
+
+    DATA(lv_mtart) = it_mara[ e_row_id-index ]-mtart.
+
+    SELECT mtart , mtbez FROM t134t INTO TABLE @it_mtext WHERE mtart = @lv_mtart AND spras = 'D' . "@lv_matnr
+
+    CALL SCREEN 400.
+
+  ENDMETHOD.
+*  SEARCH help
+
+  METHOD evt_onf4help.
+    TYPES:BEGIN OF stu_mtart,
+            mtart TYPE mtart,
+            mtbez TYPE mtbez,
+          END OF stu_mtart.
+
+    DATA: it_mtart    TYPE TABLE OF stu_mtart,
+          it_return   TYPE TABLE OF ddshretval,
+          it_f4fields TYPE TABLE OF dselc.
+
+    DATA: wa_f4fields TYPE dselc.
+
+    SELECT mtart mtbez FROM t134t INTO TABLE it_mtart UP TO 10 ROWS WHERE spras = 'E'.
+    CLEAR it_f4fields.
+
+    wa_f4fields-dyfldname = 'MTART'.
+    wa_f4fields-fldname = 'F0001'.
+
+    APPEND wa_f4fields TO it_f4fields.
+    CLEAR wa_f4fields.
+
+    CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+      EXPORTING
+*
+        retfield        = 'MTART'                 " Name des Rückgabefeldes in FIELD_TAB
+        value_org       = 'S'              " Werteübergabe: C: zellenweise, S: strukturiert
+      TABLES
+        value_tab       = it_mtart                " Tabelle der Werte; Einträge zellenweise
+        return_tab      = it_return                " Rückgabe der ausgewählten Werte
+        dynpfld_mapping = it_f4fields                " Zuordnung der Dynprofelder zur int. Tabelle
+      EXCEPTIONS
+        parameter_error = 1                " Fehlerhafte Parameter
+        no_values_found = 2                " Es wurden keine Werte gefunden
+        OTHERS          = 3.
+    IF sy-subrc <> 0.
+*       MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+*         WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+    ENDIF.
+
+    READ TABLE it_mara ASSIGNING FIELD-SYMBOL(<fs_mara>) INDEX es_row_no-row_id.
+    IF sy-subrc EQ 0.
+      READ TABLE it_return INTO DATA(wa_return) WITH KEY fieldname = 'F0001'.
+      IF sy-subrc EQ 0.
+        <fs_mara>-mtart = wa_return-fieldval.
+
+      ENDIF.
+
+    ENDIF.
+    CALL METHOD obj_alv->refresh_table_display
+      EXPORTING
+*       is_stable      =
+        i_soft_refresh = 'X'
+*  EXCEPTIONS
+*       finished       = 1
+*       others         = 2
+      .
+    IF sy-subrc <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+  ENDMETHOD.
+*toolbar
+  METHOD evt_cust_toolbar.
+
+
+    DATA: wa_cust_buttonns TYPE stb_button.
+
+    wa_cust_buttonns-butn_type = 0.
+    wa_cust_buttonns-function = 'EXIT'.
+    wa_cust_buttonns-text = 'Close'.
+
+    APPEND wa_cust_buttonns TO e_object->mt_toolbar.
+    wa_cust_buttonns-butn_type = 0.
+    wa_cust_buttonns-function = 'GBACK'.
+    wa_cust_buttonns-text = 'GO BACK'.
+
+    APPEND wa_cust_buttonns TO e_object->mt_toolbar.
+
+
+  ENDMETHOD.
+
+
+  METHOD evt_ucommand.
+
+    CASE e_ucomm.
+      WHEN 'GBACK'.
+        LEAVE TO SCREEN 0.
+      WHEN 'EXIT'.
+        LEAVE PROGRAM.
+      WHEN OTHERS.
+    ENDCASE.
+
+  ENDMETHOD.
+ENDCLASS.
+
+
+
+
+************START**************************************************
+START-OF-SELECTION.
+
+**step1 creat a obj
+  CALL SCREEN 200.
+
+
+
+
+
+
+
+
+
+
+*&---------------------------------------------------------------------*
+*& Module STATUS_0200 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE status_0200 OUTPUT.
+  SET PF-STATUS 'MENU'.
+* SET TITLEBAR 'xxx'.
+
+
+  IF obj_alv IS NOT BOUND.
+
+*dropdown
+    DATA: it_listvalues TYPE  TABLE OF lvc_s_drop,
+          wa_listvalues TYPE  lvc_s_drop.
+
+    CLEAR it_listvalues.
+    wa_listvalues-handle = '100'.
+    wa_listvalues-value = 'MG1'.
+    APPEND wa_listvalues TO it_listvalues.
+    CLEAR wa_listvalues.
+
+
+    wa_listvalues-handle = '100'.
+    wa_listvalues-value = 'MG2'.
+    APPEND wa_listvalues TO it_listvalues.
+    CLEAR wa_listvalues.
+
+
+    SELECT matnr mtart ntgew FROM mara INTO CORRESPONDING FIELDS OF TABLE it_mara UP TO 10 ROWS.
+    DELETE it_mara WHERE matnr IS INITIAL.
+
+    PERFORM fill_catalog.
+
+
+    obj_ccont = NEW cl_gui_custom_container( container_name = 'CUSTCONT' ).
+    obj_alv = NEW cl_gui_alv_grid( i_parent = obj_ccont ).
+
+* step3 call method
+
+*   events double click
+
+    DATA(obj_alv_locclass) = NEW lc_alv( ).
+
+    SET HANDLER obj_alv_locclass->evt_doubleclick FOR obj_alv.
+
+*    search help
+
+
+    DATA: it_f4fields TYPE lvc_t_f4,
+          wa_f4fields TYPE LINE OF lvc_t_f4.
+
+    CLEAR it_f4fields.
+
+    wa_f4fields-fieldname = 'MTART'.
+    wa_f4fields-register = 'X'.
+    APPEND wa_f4fields TO it_f4fields.
+    CLEAR wa_f4fields.
+
+    obj_alv->register_f4_for_fields( it_f4 = it_f4fields ).
+*
+    SET HANDLER obj_alv_locclass->evt_onf4help FOR obj_alv.
+*toolbar register
+    SET HANDLER obj_alv_locclass->evt_cust_toolbar FOR obj_alv.
+*  syuccomm event
+    SET HANDLER obj_alv_locclass->evt_ucommand FOR obj_alv.
+    SET HANDLER obj_alv_locclass->evt_hotspot FOR obj_alv.
+*  dropdowm
+
+    CALL METHOD obj_alv->set_drop_down_table
+      EXPORTING
+        it_drop_down = it_listvalues.
+
+*    assign cell color properties
+
+    wa_cellcolor-fname = 'MTART'.
+    wa_cellcolor-color-col = 3.
+
+    APPEND wa_cellcolor TO wa_mara-cell_color.
+    MODIFY it_mara FROM wa_mara INDEX 10 TRANSPORTING cell_color.
+    CLEAR wa_mara-cell_color.
+
+
+
+    wa_cellcolor-fname = 'MATNR'.
+    wa_cellcolor-color-col = 7.
+    APPEND wa_cellcolor TO wa_mara-cell_color.
+    MODIFY it_mara FROM wa_mara INDEX 7 TRANSPORTING cell_color.
+    CLEAR wa_mara-cell_color.
+
+*  wa_cellstyles-fieldname = 'MTART'.
+*  wa_cellstyles-style = cl_gui_alv_grid=>mc_style_disabled.
+*
+*  APPEND wa_cellstyles TO wa_mara-cell_styles.
+*  MODIFY it_mara FROM wa_mara INDEX 6 TRANSPORTING cell_styles.
+
+*status
+    LOOP AT it_mara ASSIGNING FIELD-SYMBOL(<fs_mara>).
+      IF <fs_mara>-mtart = 'ERSA'.
+        <fs_mara>-status = '4'.
+
+        wa_cellstyles-fieldname = 'MTART'.
+        wa_cellstyles-style = cl_gui_alv_grid=>mc_style_disabled.
+
+        APPEND wa_cellstyles TO <fs_mara>-cell_styles.
+
+      ENDIF.
+
+    ENDLOOP.
+
+
+*fill the layout parameters.
+    wa_layout-ctab_fname = 'CELL_COLOR'.
+    wa_layout-stylefname = 'CELL_STYLES'.
+    wa_layout-excp_fname = 'STATUS'.
+    wa_layout-excp_rolln = 'CHAR20'.
+
+
+
+
+*  display
+    obj_alv->set_table_for_first_display(
+
+      EXPORTING
+*      i_structure_name              = 'MARA'
+        it_toolbar_excluding = it_exclude          " Strukturname der internen Ausgabetabelle
+         is_layout = wa_layout
+      CHANGING
+        it_outtab                     = it_mara         " Ausgabetabelle
+       it_fieldcatalog               =  it_alv                " Feldkatalog
+*     it_sort                       =                  " Sortierkriterien
+*     it_filter                     =                  " Filterkriterien
+   ).
+
+  ELSE.
+
+    CALL METHOD obj_alv->refresh_table_display
+      EXPORTING
+*       is_stable      =
+        i_soft_refresh = 'X'
+*  EXCEPTIONS
+*       finished       = 1
+*       others         = 2
+      .
+    IF sy-subrc <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+  ENDIF.
+
+ENDMODULE.
+
+
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0200  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0200 INPUT.
+  DATA okcode_200 TYPE sy-ucomm.
+
+  IF okcode_200 = 'EXIT'.
+    LEAVE PROGRAM.
+
+  ENDIF.
+ENDMODULE.
+
+
+*&---------------------------------------------------------------------*
+*& Form FILL_CATALOG
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM fill_catalog .
+
+*    filll fieldcatalog
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '1'.
+  wa_alv-fieldname = 'MATNR'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '2'.
+  wa_alv-fieldname = 'MTART'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-edit = 'X'.
+  wa_alv-f4availabl = 'X'.
+  wa_alv-hotspot = 'X'.
+*  wa_alv-ref_field = 'MTART'.
+*  wa_alv-ref_table = 'MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Material Type'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '3'.
+  wa_alv-fieldname = 'NTGEW'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 20.
+  wa_alv-scrtext_m = 'Mat Net Weight'.
+  wa_alv-edit = 'X'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+  wa_alv-row_pos = '1'.
+  wa_alv-col_pos = '4'.
+  wa_alv-fieldname = 'MAT_GRP'.
+  wa_alv-tabname = 'IT_MARA'.
+  wa_alv-outputlen = 10.
+  wa_alv-drdn_hndl = '100'.
+  wa_alv-scrtext_m = 'MatGroup'.
+  wa_alv-edit = 'X'.
+
+  APPEND wa_alv TO it_alv.
+  CLEAR wa_alv.
+
+
+  wa_exclude = cl_gui_alv_grid=>mc_fc_print.
+  APPEND wa_exclude TO it_exclude.
+  wa_exclude = cl_gui_alv_grid=>mc_fc_subtot.
+  APPEND wa_exclude TO it_exclude.
+ENDFORM.
+
+
+*&---------------------------------------------------------------------*
+*& Form DATA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM data .
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Module STATUS_0300 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+MODULE status_0300 OUTPUT.
+
+  SET PF-STATUS 'MENU'.
+
+
+  IF obj_alv_2 IS NOT BOUND.
+    CLEAR: wa_alv , it_alv.
+
+    wa_alv-row_pos = '1'.
+    wa_alv-col_pos = '1'.
+    wa_alv-fieldname = 'MATNR'.
+    wa_alv-tabname = 'IT_MARC'.
+    wa_alv-outputlen = 20.
+    wa_alv-drdn_hndl = '1 '.
+    wa_alv-scrtext_m = 'Máterila Number'.
+
+    APPEND wa_alv TO it_alv.
+    CLEAR wa_alv.
+
+    wa_alv-row_pos = '1'.
+    wa_alv-col_pos = '2'.
+    wa_alv-fieldname = 'WERKS'.
+    wa_alv-tabname = 'IT_MARC'.
+    wa_alv-outputlen = 10.
+    wa_alv-scrtext_m = 'Plant'.
+
+    APPEND wa_alv TO it_alv.
+    CLEAR wa_alv.
+
+
+    CREATE OBJECT obj_cont_2
+      EXPORTING
+        container_name = 'CUSTCONT2'.
+
+    CREATE OBJECT obj_alv_2
+      EXPORTING
+        i_parent = obj_cont_2.
+
+*  *toolbar register
+    SET HANDLER obj_alv_locclass->evt_cust_toolbar FOR obj_alv_2.
+*  syuccomm event
+    SET HANDLER obj_alv_locclass->evt_ucommand FOR obj_alv_2.
+
+    CALL METHOD obj_alv_2->set_table_for_first_display
+      CHANGING
+        it_outtab       = it_marc              " Ausgabetabelle
+        it_fieldcatalog = it_alv.            " Feldkatalog
+  ENDIF.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0300  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0300 INPUT.
+  DATA okcode_300 TYPE sy-ucomm.
+
+  IF okcode_300 = 'EXIT'.
+    LEAVE PROGRAM.
+
+  ENDIF.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0400  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0400 INPUT.
+  DATA okcode_400 TYPE sy-ucomm.
+
+  IF okcode_400 = 'EXIT'.
+    LEAVE PROGRAM.
+  ENDIF.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*& Module STATUS_0400 OUTPUT
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+
+
+MODULE status_0400 OUTPUT.
+  SET PF-STATUS 'MENU'.
+
+  IF obj_alv_3 IS NOT BOUND.
+    CLEAR: wa_alv , it_alv.
+
+    wa_alv-row_pos = '1'.
+    wa_alv-col_pos = '51'.
+    wa_alv-fieldname = 'MATNR'.
+    wa_alv-tabname = 'IT_MTEXT'.
+    wa_alv-outputlen = 10.
+    wa_alv-scrtext_m = 'Máterila Type'.
+
+    APPEND wa_alv TO it_alv.
+    CLEAR wa_alv.
+
+    wa_alv-row_pos = '1'.
+    wa_alv-col_pos = '2'.
+    wa_alv-fieldname = 'MTBEZ'.
+    wa_alv-tabname = 'IT_MTEXT'.
+    wa_alv-outputlen = 10.
+    wa_alv-scrtext_m = 'Mtype Description'.
+
+    APPEND wa_alv TO it_alv.
+    CLEAR wa_alv.
+
+
+    CREATE OBJECT obj_cont_3
+      EXPORTING
+        container_name = 'CUSTCONT3'.
+
+    CREATE OBJECT obj_alv_3
+      EXPORTING
+        i_parent = obj_cont_3.
+
+*  *toolbar register
+    SET HANDLER obj_alv_locclass->evt_cust_toolbar FOR obj_alv_3.
+*  syuccomm event
+    SET HANDLER obj_alv_locclass->evt_ucommand FOR obj_alv_3.
+
+    CALL METHOD obj_alv_3->set_table_for_first_display
+      CHANGING
+        it_outtab       = it_mtext              " Ausgabetabelle
+        it_fieldcatalog = it_alv.            " Feldkatalog
+  ENDIF.
+
+ENDMODULE.
