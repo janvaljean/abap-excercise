@@ -1,28 +1,87 @@
-TYPES: BEGIN OF stu_mara,
-         matnr      TYPE matnr,
-         mtart      TYPE mtart,
-         ntgew      TYPE ntgew,
-         mat_grp    TYPE matkl,
-         cell_color TYPE lvc_t_scol,
-       END OF stu_mara.
+*&---------------------------------------------------------------------*
+*& Report ZSF_OO_ALV_TEST_003_COLOR
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zsf_oo_alv_test_003_color.
 
-DATA:it_mara TYPE TABLE OF stu_mara,
-     wa_mara TYPE stu_mara.
+TYPES: BEGIN OF stu_ekko,
+         ebeln     TYPE ebeln,
+         bukrs     TYPE bukrs,
+         bstyp     TYPE ebstyp,
+         cellcolor TYPE lvc_t_scol,
+       END OF stu_ekko.
 
-DATA:wa_cellcolor TYPE lvc_s_scol,
-     wa_layout    TYPE lvc_s_layo.
+DATA: it_ekko TYPE TABLE OF stu_ekko,
+      it_alv  TYPE slis_t_fieldcat_alv.
 
- wa_cellcolor-fname = 'MTART'.
-  wa_cellcolor-color-col = 5.  "color art
+DATA: wa_alv    TYPE slis_fieldcat_alv,
+      wa_color  TYPE lvc_s_scol,
+      wa_layout TYPE slis_layout_alv.
 
-  APPEND wa_cellcolor TO wa_mara-cell_color.
-  MODIFY it_mara FROM wa_mara INDEX 4 TRANSPORTING cell_color. "" index
-  CLEAR wa_mara-cell_color.
+SELECT FROM ekko
+  FIELDS ebeln, bukrs, bstyp
+  INTO CORRESPONDING FIELDS OF TABLE @it_ekko
+  UP TO 20 ROWS.
 
-  wa_cellcolor-fname = 'MATNR'.
-  wa_cellcolor-color-col = 7.
-  APPEND wa_cellcolor TO wa_mara-cell_color.
-  MODIFY it_mara FROM wa_mara INDEX 7 TRANSPORTING cell_color.
-  wa_layout-ctab_fname = 'CELL_COLOR'.
+  wa_layout-coltab_fieldname = 'CELLCOLOR'.
 
-wa_layout-ctab_fname = 'CELL_COLOR'.
+LOOP AT it_ekko INTO DATA(wa_ekko).
+
+  IF sy-tabix < 12.
+    wa_color-fname = 'EBELN'.
+    wa_color-color-col = 5.
+    wa_color-color-int = 1.
+    wa_color-color-inv = 0.
+
+    APPEND wa_color TO wa_ekko-cellcolor.
+    MODIFY it_ekko FROM wa_ekko TRANSPORTING cellcolor.
+
+ELSEIF sy-tabix > 12.
+   wa_color-fname = 'BUKRS'.
+    wa_color-color-col = 6.
+    wa_color-color-int = 1.
+    wa_color-color-inv = 0.
+
+    APPEND wa_color TO wa_ekko-cellcolor.
+    MODIFY it_ekko FROM wa_ekko TRANSPORTING cellcolor.
+  ENDIF.
+
+ENDLOOP.
+
+
+
+
+CLEAR it_alv.
+
+wa_alv-col_pos = 1.
+wa_alv-fieldname = 'EBELN'.
+wa_alv-seltext_m = 'PR Number'.
+wa_alv-outputlen = 15.
+
+APPEND wa_alv TO it_alv.
+CLEAR wa_alv.
+
+wa_alv-col_pos = 2.
+wa_alv-fieldname = 'BUKRS'.
+wa_alv-seltext_m = 'PR Number'.
+wa_alv-outputlen = 15.
+
+APPEND wa_alv TO it_alv.
+CLEAR wa_alv.
+
+wa_alv-col_pos = 3.
+wa_alv-fieldname = 'BSTYP'.
+wa_alv-seltext_m = 'Type'.
+wa_alv-outputlen = 15.
+
+APPEND wa_alv TO it_alv.
+CLEAR wa_alv.
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program = 'sy-repid '
+    is_layout          = wa_layout
+    it_fieldcat        = it_alv
+  TABLES
+    t_outtab           = it_ekko.
