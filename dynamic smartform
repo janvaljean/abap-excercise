@@ -1,0 +1,45 @@
+REPORT zsf_fill_db.
+
+DATA it_bseg_details  TYPE zsf_tt_bseg.
+DATA lv_fm_name TYPE rs38l_fnam.
+DATA: date_result TYPE string.
+DATA: dt TYPE sy-datum.
+DATA: lv_tm TYPE t. 
+lv_tm = sy-uzeit.
+data(time) = lv_tm USING EDIT MASK '__:__:__'. 
+
+CALL FUNCTION 'RP_CALC_DATE_IN_INTERVAL'  " Funktionsbaustein zur Datumsrechnung aufrufen
+  EXPORTING
+    date      = sy-datum                  " Eingangswert ist Systemdatum
+    days      = 0                         " 0 Tage
+    months    = 0                         " 0 Monate
+    signum    = '-'                       " Operator, hier '-' für Werte abziehen
+    years     = 1                         " 1 Jahr
+  IMPORTING
+    calc_date = dt.                       " Rückgabewert in 'dt' speichern
+
+
+
+* akt. Datum und Zeit
+
+SELECT gjahr, bukrs, belnr FROM bseg INTO CORRESPONDING FIELDS OF TABLE @it_bseg_details.
+
+CALL FUNCTION 'SSF_FUNCTION_MODULE_NAME'
+  EXPORTING
+    formname = 'ZSF_SIMPLE_FORM_BUNDES'
+  IMPORTING
+    fm_name  = lv_fm_name.
+
+
+
+
+CALL FUNCTION lv_fm_name
+EXPORTING
+
+im_addr                    = '0000023736'
+im_datum                   = dt
+im_zeit                    = dt
+
+
+TABLES
+it_bseg                    = it_bseg_details.
