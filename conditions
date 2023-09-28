@@ -1,3 +1,10 @@
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
+
+DATA(value) = COND #( WHEN status = open THEN 1
+                      WHEN status = blocked THEN 3
+                      ELSE 7 ).
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
+
 METHOD resistor_color.
     value = SWITCH #( color_code
       when 'black'  THEN 0
