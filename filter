@@ -19,3 +19,12 @@ itab2 = value #( ('A') ( 'P' ) )
 
 
 data(filtered_itab) = filter#(itab in itab2 WHERE points = table_line)
+
+---------------------------------------------
+
+
+bank_accounts = FILTER #( accounts
+                          WHERE account_type = 'B' ).
+
+
+--------------------------------------------------
