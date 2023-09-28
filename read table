@@ -1,3 +1,15 @@
+
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
+
+IF line_exists( accounts[ id = 4711 ] ).
+  "line has been found
+ENDIF.
+🟥old style 🟥
+READ TABLE accounts WITH KEY id = 4711 TRANSPORTING NO FIELDS.
+IF sy-subrc = 0.
+  "line has been found
+ENDIF.
+🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
 reading itabs line that name is sefa. 
 data(wa_read) = value #(itab[ name = 'sefa' ] optional).  --try catch
 data(wa) =  value #(itab[ 4 ] optional ) 4.th index
