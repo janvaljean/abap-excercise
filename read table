@@ -1,4 +1,10 @@
+DATA(id_of_account_5) = accounts[ 5 ]-id.
+Old style:
 
+READ TABLE accounts INDEX 5 INTO DATA(account_5).
+IF sy-subrc = 0.
+  DATA(id_of_account_5) = account_5-id.
+ENDIF.
 🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫🟥 🟧 🟨 🟩 🟦 🟪 ⬛️ ⬜️ 🟫
 
 IF line_exists( accounts[ id = 4711 ] ).
