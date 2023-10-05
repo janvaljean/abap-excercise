@@ -1,0 +1,73 @@
+types :BEGIN OF ty_itab,
+       col1 TYPE char20,
+       col2 TYPE char20,
+       col3 TYPE char20,
+       col4 TYPE char20,
+       col5 TYPE char20,
+        END OF ty_itab.
+
+
+
+
+data: gt_intern   TYPE TABLE OF alsmex_tabline,
+      gs_intern type alsmex_tabline,
+      itab TYPE TABLE OF ty_itab,
+      str_itab type ty_itab.
+
+FIELD-SYMBOLS <fs> TYPE any.
+
+PARAMETERS: p_file TYPE rlgrap-filename.
+
+
+
+at SELECTION-SCREEN ON VALUE-REQUEST FOR p_file.
+
+
+START-OF-SELECTION.
+
+call FUNCTION 'F4_FILENAME'
+  importing
+    file_name     = p_file
+  .
+
+call FUNCTION 'ALSM_EXCEL_TO_INTERNAL_TABLE'
+  EXPORTING
+    filename                = p_file
+    i_begin_col             = 1
+    i_begin_row             = 2
+    i_end_col               = 5
+    i_end_row               = 120
+  TABLES
+    intern                  = gt_intern
+  EXCEPTIONS
+    inconsistent_parameters = 1
+    upload_ole              = 2
+    others                  = 3
+  .
+IF SY-SUBRC <> 0.
+* MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+*   WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+ENDIF.
+
+LOOP AT gt_intern into gs_intern.
+    ASSIGN COMPONENT gs_intern-col of STRUCTURE str_itab to <fs>.
+        <fs> = gs_intern-value.
+        at END OF row.
+            APPEND str_itab to itab.
+        ENDAT.
+
+
+ENDLOOP.
+
+
+
+
+  cl_salv_table=>factory(
+
+    IMPORTING
+     r_salv_table   =  data(lr_alv)                        " Basisklasse einfache ALV Tabellen
+    CHANGING
+      t_table        = itab      "itab
+  ).
+
+  lr_alv->display( ).
