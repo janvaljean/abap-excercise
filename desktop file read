@@ -1,0 +1,7 @@
+PARAMETERS: p_file TYPE rlgrap-filename.
+
+at SELECTION-SCREEN ON VALUE-REQUEST FOR p_file.
+call FUNCTION 'F4_FILENAME'
+  importing
+    file_name     = p_file
+  .
