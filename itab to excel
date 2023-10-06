@@ -1,0 +1,71 @@
+
+
+data: my_filename type string.
+
+data: itab type table of scarr.
+
+types: begin of type_header,
+       line type char30,
+       end of type_header.
+
+data:  header_tab type table of type_header,
+       header_str type type_header.
+
+
+
+
+
+parameters: p_path type string.
+
+at selection-screen on value-request for p_path.
+
+  call method cl_gui_frontend_services=>directory_browse
+    changing
+      selected_folder      = p_path
+    exceptions
+      cntl_error           = 1
+      error_no_gui         = 2
+      not_supported_by_gui = 3
+      others               = 4.
+  if sy-subrc <> 0.
+* message id sy-msgid type sy-msgty number sy-msgno
+*   with sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  endif.
+
+start-of-selection.
+
+  select * from scarr
+      into table itab.
+
+  concatenate p_path
+                '\'
+                sy-datum
+                '-'
+                sy-uzeit
+                '.xls'
+                into my_filename.
+
+
+header_str-line = 'Mandant'.
+append header_str to header_tab.
+header_str-line = 'short definition'.
+append header_str to header_tab.
+header_str-line = 'name'.
+append header_str to header_tab.
+header_str-line = 'currency'.
+append header_str to header_tab.
+header_str-line = 'URL'.
+append header_str to header_tab.
+
+
+
+
+
+  call function 'GUI_DOWNLOAD'
+    exporting
+      filename = my_filename
+      filetype = 'ASC'
+     write_field_separator     = 'X'
+    tables
+      data_tab = itab
+      fieldnames = header_tab.
