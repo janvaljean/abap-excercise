@@ -1,0 +1,323 @@
+*&---------------------------------------------------------------------*
+*& Report  YAB_DEMO_EXCEL_UPLOAD_DYN_2
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  yab_demo_excel_upload_dyn_2.
+
+DATA:lt_excel       TYPE TABLE OF alsmex_tabline,
+     lt_dref        TYPE REF TO data,
+     ls_dref        TYPE REF TO data,
+     lv_col         TYPE i,
+     lo_alv         TYPE REF TO cl_salv_table,
+     lt_table_filds TYPE TABLE OF dfies.
+
+
+FIELD-SYMBOLS : <fs_table> TYPE ANY .
+FIELD-SYMBOLS : <ft_table> TYPE STANDARD TABLE.
+FIELD-SYMBOLS : <dyn_field> .
+
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS:p_file  TYPE rlgrap-filename OBLIGATORY,
+           p_table TYPE dd02l-tabname OBLIGATORY.
+SELECTION-SCREEN END OF BLOCK b1.
+
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_file.
+  PERFORM selectfile USING p_file.
+
+
+
+
+START-OF-SELECTION.
+  PERFORM upload_excel.
+  PERFORM display.
+
+
+
+
+
+**********************************************************************
+**********************************************************************
+**********************************************************************
+
+*&---------------------------------------------------------------------*
+*&      Form  selectfile
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_PA_FILE  text
+*----------------------------------------------------------------------*
+FORM selectfile USING p_pa_file TYPE localfile.
+
+  DATA: lv_subrc LIKE sy-subrc,
+        lt_it_tab TYPE filetable.
+
+  CALL METHOD cl_gui_frontend_services=>file_open_dialog
+    EXPORTING
+      window_title     = 'Select Source Excel File'
+      default_filename = '*.xls'
+      multiselection   = ' '
+    CHANGING
+      file_table       = lt_it_tab
+      rc               = lv_subrc.
+
+  IF lt_it_tab IS NOT INITIAL.
+    READ TABLE lt_it_tab INTO p_pa_file INDEX 1.
+  ENDIF.
+
+ENDFORM.                    "selectfile
+
+
+*&---------------------------------------------------------------------*
+*&      Form  UPLOAD_EXCEL
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM upload_excel .
+
+
+  CREATE DATA lt_dref TYPE TABLE OF (p_table).
+  CREATE DATA ls_dref TYPE (p_table).
+*** --- Assign field symbol with table type of DDIC
+  ASSIGN lt_dref->* TO <ft_table>.
+*** --- Assign field symbol with Structure type of DDIC
+  ASSIGN ls_dref->* TO <fs_table>.
+*** --- Call the Function module ALSM_EXCEL_TO_INTERNAL_TABLE
+
+  CALL FUNCTION 'ALSM_EXCEL_TO_INTERNAL_TABLE'
+    EXPORTING
+      filename                = p_file
+      i_begin_col             = 1
+      i_begin_row             = 1
+      i_end_col               = 99
+      i_end_row               = 9999
+    TABLES
+      intern                  = lt_excel
+    EXCEPTIONS
+      inconsistent_parameters = 1
+      upload_ole              = 2
+      OTHERS                  = 3.
+
+
+  DATA ls_excel LIKE LINE OF lt_excel.
+
+  IF sy-subrc EQ 0.
+*** --- Sort
+    SORT lt_excel BY row col.
+
+    CALL FUNCTION 'DDIF_FIELDINFO_GET'
+      EXPORTING
+        tabname        = p_table
+      TABLES
+        dfies_tab      = lt_table_filds
+      EXCEPTIONS
+        not_found      = 1
+        internal_error = 2
+        OTHERS         = 3.
+
+    DATA lv_char(30).
+
+    DATA ls_loa_map TYPE YOH_LOA_MAP .
+    DATA lv_loa TYPE lgart  .
+
+    LOOP AT lt_excel INTO ls_excel.
+
+*** --- Adding count to skip the mapping for MANDT field
+      lv_col = ls_excel-col.
+      ASSIGN COMPONENT lv_col OF STRUCTURE <fs_table> TO <dyn_field>.
+      IF sy-subrc = 0.
+***-- Compare Excel sheet column data and Dynamic table fields
+        IF ls_excel-row = 1.
+
+          DATA ls_table_fields LIKE LINE OF lt_table_filds.
+
+          READ TABLE lt_table_filds INTO ls_table_fields INDEX lv_col.
+          IF sy-subrc = 0.
+            IF ls_table_fields-fieldname NE ls_excel-value.
+              WRITE: 'Excel sheet data and Dynamic table fields are not matching'.
+              EXIT.
+            ENDIF.
+          ENDIF.
+        ELSE.
+          READ TABLE lt_table_filds INTO ls_table_fields INDEX lv_col.
+          IF sy-subrc = 0.
+            CASE ls_table_fields-domname.
+              WHEN 'LGART'.
+
+                clear : lv_loa , ls_loa_map .
+
+                lv_loa = ls_excel-value .
+
+                SELECT SINGLE * FROM YOH_LOA_MAP INTO ls_loa_map
+                  WHERE pbloa = lv_loa .
+                  IF sy-subrc = 0.
+                    ls_excel-value = ls_loa_map-dbloa .
+                  ENDIF.
+
+*                CASE ls_excel-value.
+**                  WHEN '1004'.
+*                    ls_excel-value = '0104'.
+*                  WHEN .
+*                  WHEN OTHERS.
+*                ENDCASE.
+            ENDCASE.
+
+            CASE ls_table_fields-datatype.
+              WHEN 'DATS'.
+                CLEAR lv_char.
+                CONCATENATE ls_excel-value+6(4) ls_excel-value+3(2) ls_excel-value+0(2) INTO lv_char.
+                ls_excel-value = lv_char.
+
+              WHEN 'DEC'.
+                REPLACE ALL OCCURRENCES OF ',' IN ls_excel-value WITH '.'.
+
+              WHEN 'TIMS'.
+                CLEAR lv_char.
+                CONCATENATE ls_excel-value+0(2) ls_excel-value+3(2) ls_excel-value+6(2) INTO lv_char.
+                ls_excel-value = lv_char.
+
+              WHEN 'CLNT'.
+                IF lv_col = 1.
+                  ls_excel-value = sy-mandt.
+                ENDIF.
+            ENDCASE.
+          ENDIF.
+
+          <dyn_field> = ls_excel-value.
+        ENDIF.
+      ENDIF.
+      IF ls_excel-row GT 1.
+        AT END OF row.
+          APPEND <fs_table> TO <ft_table>.
+          CLEAR <fs_table>.
+        ENDAT.
+      ENDIF.
+    ENDLOOP.
+
+  ENDIF.
+
+
+ENDFORM.                    " UPLOAD_EXCEL
+
+
+*&---------------------------------------------------------------------*
+*&      Form  DISPLAY
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM display .
+
+  CALL SCREEN 100.
+
+ENDFORM.                    " DISPLAY
+
+
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_0100  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_0100 OUTPUT.
+
+  SET PF-STATUS 'STATUS_100'.
+  SET TITLEBAR 'TITLE_100'.
+
+  SET TITLEBAR 'TITLE_100' WITH p_table.
+
+ENDMODULE.                 " STATUS_0100  OUTPUT
+
+
+*&---------------------------------------------------------------------*
+*&      Module  PROCESS_0100  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE process_0100 OUTPUT.
+
+
+  IF lo_alv IS NOT BOUND.
+
+    cl_salv_table=>factory(
+      EXPORTING
+        r_container  = cl_gui_container=>screen0
+      IMPORTING
+        r_salv_table =  lo_alv   " Basis Class Simple ALV Tables
+      CHANGING
+        t_table      = <ft_table>
+    ).
+
+
+    DATA: gr_columns TYPE REF TO cl_salv_columns_table.
+
+    gr_columns = lo_alv->get_columns( ).
+    gr_columns->set_optimize( abap_true ).
+
+    lo_alv->display( ).
+
+  ELSE.
+
+    gr_columns = lo_alv->get_columns( ).
+    gr_columns->set_optimize( abap_true ).
+
+    lo_alv->refresh( ).
+
+  ENDIF.
+
+
+ENDMODULE.                 " PROCESS_0100  OUTPUT
+
+
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0100 INPUT.
+
+
+  CASE sy-ucomm.
+    WHEN 'UPDATE'.
+
+      IF <ft_table> IS NOT INITIAL.
+
+        MODIFY (p_table) FROM TABLE <ft_table>.
+        IF sy-subrc EQ 0.
+          COMMIT WORK AND WAIT.
+          DATA lv_lines(10).
+          lv_lines = LINES( <ft_table> ).
+          DATA lv_message(50).
+          CONCATENATE 'Total Number of Records Updated :' lv_lines INTO lv_message SEPARATED BY space.
+          MESSAGE lv_message TYPE 'I' DISPLAY LIKE 'S'.
+        ELSE.
+          ROLLBACK WORK.
+          CONCATENATE 'Database table update error :' p_table INTO lv_message SEPARATED BY space.
+          MESSAGE lv_message TYPE 'E' DISPLAY LIKE 'I'.
+        ENDIF.
+
+      ENDIF.
+
+  ENDCASE.
+
+
+ENDMODULE.                 " USER_COMMAND_0100  INPUT
+
+
+*&---------------------------------------------------------------------*
+*&      Module  EXIT_0100  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE exit_0100 INPUT.
+  LEAVE TO SCREEN 0.
+ENDMODULE.                 " EXIT_0100  INPUT
