@@ -1,0 +1,51 @@
+https://port4004-workspaces-ws-xxz8t.us10.trial.applicationstudio.cloud.sap/odata/v4/elearning/Courses🏀?$filter=price lt '2000'🎈
+
+{
+"@odata.context": "$metadata#Courses",
+"value": [
+{
+"createdAt": "2023-08-03T09:23:00.178Z",
+"createdBy": "bbb@gmail.com",
+"modifiedAt": "2023-08-03T09:23:00.178Z",
+"modifiedBy": "bbb@gmail.com",
+"category_id": "5531d4c5-0dd7-42c8-9866-0992989f8476",
+"course_id": "8aaa12a9-c379-4f23-83cf-c886271d77ec",
+"course_name": "Linux Command Line Basics",
+"price": "4000",
+"language_code": "English_US"
+},
+{
+"createdAt": "2023-08-03T09:23:00.178Z",
+"createdBy": "aaa@gmail.com",
+"modifiedAt": "2023-08-03T09:23:00.178Z",
+"modifiedBy": "aaa@gmail.com",
+"category_id": "5531d4c5-0dd7-42c8-9866-0992989f8476",
+"course_id": "ca88e8ca-4d72-44da-b5c9-037ad56c134c",
+"course_name": "Introduction to Fiber Optic Cabling",
+"price": "1500",
+"language_code": "English_US"
+},
+{
+"createdAt": "2023-08-03T09:23:00.178Z",
+"createdBy": "eee@gmail.com",
+"modifiedAt": "2023-08-03T09:23:00.178Z",
+"modifiedBy": "eee@gmail.com",
+"category_id": "5c04c1a9-1f4d-4dd8-a7fd-b9215ce95041",
+"course_id": "19c90dab-0634-4de9-a7c4-8c8249127db8",
+"course_name": "Budget - Save - Win. Simplify your financial life",
+"price": "1400",
+"language_code": "English_UK"
+},
+{
+"createdAt": "2023-08-03T09:23:00.178Z",
+"createdBy": "ddd@gmail.com",
+"modifiedAt": "2023-08-03T09:23:00.178Z",
+"modifiedBy": "ddd@gmail.com",
+"category_id": "80f8f367-c0d4-4ff9-9bf1-f9f5dcbc50cb",
+"course_id": "86da9f7a-db10-427d-8783-3889178a08cc",
+"course_name": "Powerful business writing: How to write concisely",
+"price": "2000",
+"language_code": "English_US"
+}
+]
+}
