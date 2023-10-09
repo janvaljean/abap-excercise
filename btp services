@@ -1,0 +1,4 @@
+🎈The SAP HANA Deployment Infrastructure (HDI)🎈
+is a service layer of the SAP HANA database that simplifies the deployment of SAP HANA database objects by providing a declarative approach for defining database objects (as design-time artifacts) and ensuring a consistent deployment into the database. The HDI service enables you to create and manage not only HDI containers but also plain schemata, and the Secure Store on shared SAP HANA XS advanced systems.
+
+💊💊💊💊💊💊💊💊💊💊💊💊💊💊💊💊💊💊💊
