@@ -1,0 +1,25 @@
+entity Sections  {
+    key id : UUID @(title : 'Section ID');
+    name : String(16) @(title : 'Section Name');
+    description : String(64) @(title : 'Section Description');
+    
+}
+
+entity Fashion_Types  {
+    key id : UUID  @(title : 'Fashion Type ID');
+    section : Association to Sections  @(title : 'Section ID');
+    typename : String(16) @(title : 'Fashion Type Name');
+    description : String(64) @(title : 'Fashion Type Description');
+    
+}
+entity Fashion_Items  {
+    key id : UUID  @(title : 'Fashion Item ID');
+    fashionType : Association to Fashion_Types  @(title : 'Fashion Type ID');
+    itemname : String(16)  @(title : 'Fashion Item');
+    brand : String(16)  @(title : 'brand');
+    size : String(8) @(title : 'size');
+    material : String(16) @(title : 'material');
+    price : String(10) @(title : 'price');
+    currency : Currency @(title : 'currency');
+    isAvailable : Flag @(title : 'isAvailable?');
+}
