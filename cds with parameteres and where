@@ -1,0 +1,23 @@
+define view ZSF_CDS_INPUT
+  with parameters p_mtype : mtart, p_mgroup : matk2
+as select from mara
+
+{
+  key matnr,
+  mtart,
+  matkl,
+  ntgev
+}where mtart = :p_mtype
+  and  matkl = :p_mgroup
+
+
+
+-------------se38---------
+
+parameteres p_mtart type mtart.
+
+  select * from zsf_cds_input( p_mtype = @p_mtart, p_mgroup = 'L004' )
+          into table @data(it_material)
+
+
+--------------------------------------
