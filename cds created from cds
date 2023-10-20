@@ -1,0 +1,7 @@
+define view zsf_call_Cds as select from zsf_cds_input(p_mtype:'FERT', p_mgroup:'L004')
+{
+    matnr,
+    mtart,
+    matki,
+    ntgev
+}
