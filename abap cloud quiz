@@ -1,0 +1,8 @@
+
+1-The most important views in the ABAP Development Tools perspective include:🎈 Project Explorer View 🎈Source Code Editor View
+2-The SAP Business Technology Platform (BTP) is an example of which of following?🎈🎈Platform as a service (PAAS)
+3-In the ABAP source code, how do you navigate to the definition of a development object?🎈Position the cursor on the name of the object and press F3
+4-An ABAP Cloud Project in ABAP Development Tools (ADT) allows you to connect to what kinds of system? 🎈SAP BTP ABAP Instance and ABAP Instance in SAP S/4 HANA Cloud
+5-What must you do when you create an ABAP package? 🎈Assign the package to a software component and  Use the letter Z or Y as the first character in the name
+6-Which of the following characters are not allowed in an ABAP class?🎈$
+7-For the full signature of a method call when using keyword completion, you must select the method name and press which of the following?🎈🎈Shift + enter
