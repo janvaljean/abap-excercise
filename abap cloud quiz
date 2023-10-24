@@ -6,3 +6,11 @@
 5-What must you do when you create an ABAP package? 🎈Assign the package to a software component and  Use the letter Z or Y as the first character in the name
 6-Which of the following characters are not allowed in an ABAP class?🎈$
 7-For the full signature of a method call when using keyword completion, you must select the method name and press which of the following?🎈🎈Shift + enter
+8-Which of the following items is supplied in the logon language of the user instead of the hard-coded text in the ABAP program when a statement using the item is executed?🎈🎈Text symbol
+9-Which of the following are numeric data types?🎈 Numeric Standard Data Types are I (integers, whole numbers and no decimal places) and p (packed, decimal numbers).
+10-You can use one of the following statements to divide a character string into several substrings.🎈Using the SPLIT statement, you can divide character strings into substrings.
+11-Which of the following system variables contains the current loop pass in a DO loop?🎈SY-INDEX
+12-Which of the following are mandatory parts of an IFstatement? if and endif
+13-A watchpoint can only be created while in the ADT debugger? true
+14-
+
