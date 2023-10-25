@@ -18,3 +18,11 @@
   - [Executable Example](#executable-example)
 
 ## Introduction
+``` abap
+TYPES: BEGIN OF struc_type,
+         comp1 TYPE ...,
+         comp2 TYPE ...,
+         comp3 TYPE ...,
+         ...,
+       END OF struc_type.
+```
