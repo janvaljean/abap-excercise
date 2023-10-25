@@ -15,5 +15,7 @@
 14-Runtime errors can be viewed in which tool?ABAP Runtime Error Viewer
 15-The following techniques can avoid runtime errors. Choose all correct answers.Use program logic to avoid errors and Trap error with Try statements
 16-what tells INTO CORRESPONDING FIELDS clause? the database interface to put the data into the fields of the structure (ls_airport) that have the same names as the fields retrieved from the database table
-17-
+17-What are the benefits of Cloud Foundry?  Language independent,Admin separation,Open Source
+18-
+
 
