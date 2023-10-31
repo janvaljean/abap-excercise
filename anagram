@@ -27,3 +27,10 @@ ENDLOOP.
   ENDMETHOD.
 ```
 ####################################################################
+```ABAP
+DATA(text) = `This is a string`.
+
+" old style
+DATA text TYPE string.
+text = `This is a string`.
+```
