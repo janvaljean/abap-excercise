@@ -1,5 +1,5 @@
   METHOD anagram.
-
+```ABAP
 result = candidates.
 
 LOOP AT candidates INTO DATA(ls_str) .
@@ -25,5 +25,5 @@ ENDLOOP.
 
 
   ENDMETHOD.
-
+```
 ####################################################################
