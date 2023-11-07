@@ -19,7 +19,8 @@
 18- MTA is logically a single application, consisting of multiple related and interdependent parts (herein called modules) that are developed using different technologies or programming paradigms and designed to run on different target runtime environments, with a single, consistent lifecycle.
 19-What is the programming model used in non-ABAP based extensions on SAP BTP? SAP Cloud Application Programming Model
 20-What is the recommended approach for adding custom business logic to an SAP S/4HANA Cloud system? Using side-by-side extensibility with SAP BTP.
-21-
+21-Which of the below parameters are mandatory in the Modules section of mta.yaml?name,type,path
+22-What is the origin of the name "Multi-Target Application"?It is an application made of multiple modules running in different runtime environments.
 
 
 
